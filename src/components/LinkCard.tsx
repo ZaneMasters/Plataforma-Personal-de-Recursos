@@ -13,6 +13,7 @@ interface LinkCardProps {
   onToggleFavorite: (e: React.MouseEvent) => void;
   onUpdateLink: (updatedData: Partial<Link>) => void;
   onDeleteLink: () => void;
+  existingCategories?: string[];
 }
 
 const AnimatedStarButton = ({ isFavorite, onClick }: { isFavorite: boolean | undefined; onClick: (e: React.MouseEvent) => void }) => {
@@ -80,7 +81,7 @@ const AnimatedStarButton = ({ isFavorite, onClick }: { isFavorite: boolean | und
   );
 };
 
-export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDeleteLink }: LinkCardProps) {
+export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDeleteLink, existingCategories = [] }: LinkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -328,6 +329,24 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
               <div className="col-span-1">
                 <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Categoría</label>
                 <input type="text" value={editCategory} onChange={e => setEditCategory(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
+                {existingCategories.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {existingCategories.map(cat => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setEditCategory(cat); }}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors font-medium ${
+                          editCategory === cat 
+                          ? 'bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 border-accent-300 dark:border-accent-700' 
+                          : 'bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="col-span-1">
                 <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Etiquetas (separadas por coma)</label>

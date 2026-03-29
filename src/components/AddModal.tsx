@@ -7,9 +7,10 @@ import { toast } from 'react-hot-toast';
 interface AddModalProps {
   onClose: () => void;
   onAdd: (linkData: any) => void;
+  existingCategories?: string[];
 }
 
-export function AddModal({ onClose, onAdd }: AddModalProps) {
+export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalProps) {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -144,6 +145,24 @@ export function AddModal({ onClose, onAdd }: AddModalProps) {
             <div className="col-span-1">
               <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Categoría</label>
               <input type="text" value={category} onChange={e => setCategory(e.target.value)} placeholder="ej. Sistemas de Diseño" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
+              {existingCategories.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {existingCategories.map(cat => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setCategory(cat)}
+                      className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors font-medium ${
+                        category === cat 
+                        ? 'bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 border-accent-300 dark:border-accent-700' 
+                        : 'bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="col-span-1">
               <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Etiquetas</label>

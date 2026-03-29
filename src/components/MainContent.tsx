@@ -11,9 +11,10 @@ interface MainContentProps {
   onToggleFavorite: (id: string) => void;
   onUpdateLink: (id: string, updatedData: Partial<Link>) => void;
   onDeleteLink: (id: string, imageUrl?: string) => void;
+  existingCategories: string[];
 }
 
-export function MainContent({ links, selectedCategory, searchQuery, viewMode, onToggleFavorite, onUpdateLink, onDeleteLink }: MainContentProps) {
+export function MainContent({ links, selectedCategory, searchQuery, viewMode, onToggleFavorite, onUpdateLink, onDeleteLink, existingCategories }: MainContentProps) {
   
   // Filter logic: Category select + Search
   const filteredLinks = links.filter(l => {
@@ -71,6 +72,7 @@ export function MainContent({ links, selectedCategory, searchQuery, viewMode, on
                 onToggleFavorite={(e) => { e.stopPropagation(); onToggleFavorite(link.id) }} 
                 onUpdateLink={(updated) => onUpdateLink(link.id, updated)}
                 onDeleteLink={() => onDeleteLink(link.id, link.image)}
+                existingCategories={existingCategories}
               />
             </motion.div>
           ))}

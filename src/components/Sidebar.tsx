@@ -1,4 +1,4 @@
-import { HelpCircle, FolderOpen, Plus, Settings, Star, LayoutGrid, LogOut } from 'lucide-react';
+import { HelpCircle, FolderOpen, Plus, Settings, Star, LayoutGrid, LogOut, X } from 'lucide-react';
 import type { Link } from '../types';
 import type { User } from 'firebase/auth';
 
@@ -10,9 +10,10 @@ interface SidebarProps {
   user?: User | null;
   onLogout?: () => void;
   onSettingsClick: () => void;
+  onCloseMobile?: () => void;
 }
 
-export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick, user, onLogout, onSettingsClick }: SidebarProps) {
+export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick, user, onLogout, onSettingsClick, onCloseMobile }: SidebarProps) {
   
   
   const categories = Array.from(new Set(links.map(link => link.category))).sort();
@@ -24,8 +25,8 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
   const favoritesCount = links.filter(l => l.isFavorite).length;
 
   return (
-    <aside className="w-64 h-full bg-surface-50 dark:bg-surface-900/50 border-r border-surface-200 dark:border-surface-800 flex flex-col pt-6 pb-6 shrink-0 z-20 shadow-[1px_0_10px_rgba(0,0,0,0.02)] transition-colors duration-200">
-      <div className="px-6 mb-8">
+    <aside className="w-64 h-full bg-surface-50 dark:bg-surface-900/50 border-r border-surface-200 dark:border-surface-800 flex flex-col pt-6 pb-6 shrink-0 z-20 shadow-[1px_0_10px_rgba(0,0,0,0.02)] transition-colors duration-200 relative">
+      <div className="px-6 mb-8 flex justify-between items-center">
         <button 
           onClick={onAddClick}
           className="w-full bg-accent-600 hover:bg-accent-700 dark:bg-accent-500 dark:hover:bg-accent-600 text-white font-bold py-2.5 px-4 rounded shadow-sm text-sm transition-all flex items-center justify-center space-x-2 active:scale-95"
@@ -33,6 +34,14 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
           <Plus className="w-4 h-4" />
           <span>Añadir Enlace</span>
         </button>
+        {onCloseMobile && (
+          <button 
+            onClick={onCloseMobile}
+            className="md:hidden ml-4 p-2 -mr-2 text-surface-400 hover:text-accent-500 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 space-y-6">
@@ -117,7 +126,7 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
           className="w-full flex items-center space-x-3 px-3 py-2 text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800/50 rounded-md transition-colors text-sm font-medium group"
         >
           <HelpCircle className="w-4 h-4 text-surface-400 dark:text-surface-500 group-hover:text-surface-600 dark:group-hover:text-surface-300" />
-          <span>Perfil de GitHub</span>
+          <span>Soporte</span>
         </a>
       </div>
 

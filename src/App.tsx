@@ -24,6 +24,7 @@ function App() {
   const [viewMode] = useState<'grid' | 'list'>('grid');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Auth State
   const [user, setUser] = useState<User | null>(null);
@@ -250,6 +251,8 @@ function App() {
 
   // --- MAIN APP --- //
 
+  const existingCategories = Array.from(new Set(links.map(link => link.category))).sort();
+
   const breadcrumbs = ["LinkVault"];
   if (selectedCategory === '__FAVORITES__') {
     breadcrumbs.push("Favoritos");
@@ -262,17 +265,39 @@ function App() {
   return (
     <div className="flex h-screen w-full bg-surface-50 dark:bg-[#0b1120] overflow-hidden font-sans text-surface-800 dark:text-surface-200 transition-colors duration-200">
       <Toaster position="bottom-right" toastOptions={{ className: 'font-sans font-medium text-sm rounded shadow-lg dark:bg-surface-800 dark:text-surface-200 dark:border dark:border-surface-700' }} />
-      <Sidebar 
-        links={links} 
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-        onAddClick={() => setIsAddModalOpen(true)} 
-        user={user}
-        onLogout={handleLogout}
-        onSettingsClick={() => setIsSettingsModalOpen(true)}
-      />
       
-      <div className="flex-[4] flex flex-col h-full overflow-hidden relative">
+      {/* Mobile Drawer Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-surface-900/60 dark:bg-black/60 backdrop-blur-sm z-30 md:hidden animate-[fadeIn_0.3s_ease-out]" 
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Floating Drawer on Mobile, Static on Desktop */}
+      <div className={`fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <Sidebar 
+          links={links} 
+          selectedCategory={selectedCategory}
+          onSelectCategory={(cat) => {
+             setSelectedCategory(cat);
+             setIsMobileMenuOpen(false); // Close mobile drawer when a category is picked
+          }}
+          onAddClick={() => {
+             setIsAddModalOpen(true);
+             setIsMobileMenuOpen(false); // Close mobile drawer when adding link
+          }} 
+          user={user}
+          onLogout={handleLogout}
+          onSettingsClick={() => {
+             setIsSettingsModalOpen(true);
+             setIsMobileMenuOpen(false); // Close mobile drawer on settings open
+          }}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
+        />
+      </div>
+      
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative w-full">
         <TopBar 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -282,6 +307,7 @@ function App() {
             setSelectedCategory(null);
             setSearchQuery('');
           }}
+          onMenuClick={() => setIsMobileMenuOpen(true)}
         />
         <MainContent 
           links={links}
@@ -291,6 +317,7 @@ function App() {
           onToggleFavorite={handleToggleFavorite}
           onUpdateLink={handleUpdateLink}
           onDeleteLink={handleDeleteLink}
+          existingCategories={existingCategories}
         />
       </div>
 
@@ -298,6 +325,7 @@ function App() {
         <AddModal 
           onClose={() => setIsAddModalOpen(false)} 
           onAdd={handleAddLink} 
+          existingCategories={existingCategories}
         />
       )}
 

@@ -91,35 +91,35 @@ export function AddModal({ onClose, onAdd }: AddModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="bg-white rounded border border-slate-200 shadow-2xl w-full max-w-[600px] relative z-10 flex flex-col max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
-          <h2 className="font-display font-bold text-lg text-slate-800">Añadir Nueva Referencia</h2>
-          <button onClick={onClose} disabled={isUploading} className="text-slate-400 hover:text-slate-600 p-1 disabled:opacity-50"><X className="w-5 h-5"/></button>
+      <div className="absolute inset-0 bg-surface-900/60 dark:bg-surface-900/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="bg-white dark:bg-surface-800 rounded border border-surface-200 dark:border-surface-700 shadow-2xl w-full max-w-[600px] relative z-10 flex flex-col max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-5 border-b border-surface-100 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50">
+          <h2 className="font-display font-bold text-lg text-surface-800 dark:text-surface-100">Añadir Nueva Referencia</h2>
+          <button onClick={onClose} disabled={isUploading} className="text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 p-1 disabled:opacity-50 transition-colors"><X className="w-5 h-5"/></button>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
-          <div className="col-span-1 border-b border-slate-100 pb-5">
-            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Imagen de Portada</label>
+          <div className="col-span-1 border-b border-surface-100 dark:border-surface-700 pb-5">
+            <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-2">Imagen de Portada</label>
             <div 
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               className={`w-full h-36 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors overflow-hidden relative group
-                ${imagePreview ? 'border-blue-300 bg-blue-50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-slate-400'}`}
+                ${imagePreview ? 'border-accent-300 bg-accent-50 dark:bg-accent-900/30 dark:border-accent-800' : 'border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-900/50 hover:bg-surface-100 dark:hover:bg-surface-800 hover:border-surface-400 dark:hover:border-surface-500'}`}
             >
               {imagePreview ? (
                 <>
                   <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <div className="absolute inset-0 bg-surface-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                     <span className="text-white font-bold text-sm bg-black/50 px-3 py-1.5 rounded">Cambiar Imagen</span>
                   </div>
                 </>
               ) : (
                 <>
-                  <ImageIcon className="w-8 h-8 text-slate-400 mb-2" />
-                  <p className="text-sm font-semibold text-slate-600">Haz clic para subir o arrastra un archivo</p>
-                  <p className="text-xs text-slate-500 mt-1">SVG, PNG, JPG (max. 800x400px)</p>
+                  <ImageIcon className="w-8 h-8 text-surface-400 dark:text-surface-500 mb-2" />
+                  <p className="text-sm font-semibold text-surface-600 dark:text-surface-300">Haz clic para subir o arrastra un archivo</p>
+                  <p className="text-xs text-surface-500 dark:text-surface-400 mt-1">SVG, PNG, JPG (max. 800x400px)</p>
                 </>
               )}
               <input 
@@ -134,30 +134,30 @@ export function AddModal({ onClose, onAdd }: AddModalProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">URL <span className="text-red-500">*</span></label>
-              <input required type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-slate-500 text-slate-800 focus:shadow-sm transition-shadow" />
+              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">URL <span className="text-red-500">*</span></label>
+              <input required type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
             </div>
             <div className="col-span-2">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Título <span className="text-red-500">*</span></label>
-              <input required type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Título de la referencia" className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-slate-500 text-slate-800 focus:shadow-sm transition-shadow" />
+              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Título <span className="text-red-500">*</span></label>
+              <input required type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Título de la referencia" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
             </div>
             <div className="col-span-1">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Categoría</label>
-              <input type="text" value={category} onChange={e => setCategory(e.target.value)} placeholder="ej. Sistemas de Diseño" className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-slate-500 text-slate-800 focus:shadow-sm transition-shadow" />
+              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Categoría</label>
+              <input type="text" value={category} onChange={e => setCategory(e.target.value)} placeholder="ej. Sistemas de Diseño" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
             </div>
             <div className="col-span-1">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Etiquetas</label>
-              <input type="text" value={tags} onChange={e => setTags(e.target.value)} placeholder="Separadas por coma (ej. react, ui)" className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-slate-500 text-slate-800 focus:shadow-sm transition-shadow" />
+              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Etiquetas</label>
+              <input type="text" value={tags} onChange={e => setTags(e.target.value)} placeholder="Separadas por coma (ej. react, ui)" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
             </div>
             <div className="col-span-2">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Notas</label>
-              <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Descripción corta..." rows={3} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-slate-500 text-slate-800 resize-none focus:shadow-sm transition-shadow" />
+              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Notas</label>
+              <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Descripción corta..." rows={3} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 resize-none focus:shadow-sm transition-shadow" />
             </div>
           </div>
 
-          <div className="mt-4 flex justify-end gap-3 border-t border-slate-100 pt-5">
-            <button type="button" onClick={onClose} disabled={isUploading} className="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors disabled:opacity-50">Cancelar</button>
-            <button type="submit" disabled={isUploading} className="px-5 py-2 text-sm font-bold bg-slate-800 text-white rounded shadow-sm hover:bg-slate-700 active:scale-95 transition-all disabled:opacity-75 disabled:active:scale-100 flex items-center">
+          <div className="mt-4 flex justify-end gap-3 border-t border-surface-100 dark:border-surface-700 pt-5">
+            <button type="button" onClick={onClose} disabled={isUploading} className="px-4 py-2 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-200 transition-colors disabled:opacity-50">Cancelar</button>
+            <button type="submit" disabled={isUploading} className="px-5 py-2 text-sm font-bold bg-accent-600 hover:bg-accent-700 dark:bg-accent-500 dark:hover:bg-accent-600 text-white rounded shadow-sm active:scale-95 transition-all disabled:opacity-75 disabled:active:scale-100 flex items-center">
               {isUploading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

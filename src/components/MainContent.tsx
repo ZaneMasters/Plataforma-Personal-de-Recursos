@@ -43,9 +43,9 @@ export function MainContent({ links, selectedCategory, searchQuery, viewMode, on
 
   if (filteredLinks.length === 0) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 p-8">
-        <FolderOpen className="w-16 h-16 mb-4 text-slate-300" />
-        <p className="font-medium text-lg text-slate-500">
+      <div className="w-full h-full flex flex-col items-center justify-center text-surface-400 dark:text-surface-500 p-8 transition-colors">
+        <FolderOpen className="w-16 h-16 mb-4 text-surface-300 dark:text-surface-600" />
+        <p className="font-medium text-lg text-surface-500 dark:text-surface-400">
           {searchQuery ? "No se encontraron recursos con esa búsqueda" : "No hay referencias en esta categoría. ¡Añade tu primer enlace!"}
         </p>
       </div>

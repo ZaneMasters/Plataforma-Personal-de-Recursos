@@ -3,12 +3,107 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Blue - Default Accent */
+    --color-accent-50: 239 246 255;
+    --color-accent-100: 219 234 254;
+    --color-accent-500: 59 130 246;
+    --color-accent-600: 37 99 235;
+    --color-accent-900: 30 58 138;
+
+    /* Slate - Default Surface */
+    --color-surface-50: 248 250 252;
+    --color-surface-100: 241 245 249;
+    --color-surface-200: 226 232 240;
+    --color-surface-300: 203 213 225;
+    --color-surface-400: 148 163 184;
+    --color-surface-500: 100 116 139;
+    --color-surface-600: 71 85 105;
+    --color-surface-700: 51 65 85;
+    --color-surface-800: 30 41 59;
+    --color-surface-900: 15 23 42;
+    --color-surface-950: 2 6 23;
+  }
+  
+  [data-theme='emerald'] {
+    --color-accent-50: 236 253 245;
+    --color-accent-100: 209 250 229;
+    --color-accent-500: 16 185 129;
+    --color-accent-600: 5 150 105;
+    --color-accent-900: 6 78 59;
+  }
+
+  [data-theme='violet'] {
+    --color-accent-50: 245 243 255;
+    --color-accent-100: 237 233 254;
+    --color-accent-500: 139 92 246;
+    --color-accent-600: 124 58 237;
+    --color-accent-900: 76 29 149;
+  }
+
+  [data-theme='rose'] {
+    --color-accent-50: 255 241 242;
+    --color-accent-100: 255 228 230;
+    --color-accent-500: 244 63 94;
+    --color-accent-600: 225 29 72;
+    --color-accent-900: 136 19 55;
+  }
+
+  [data-theme='amber'] {
+    --color-accent-50: 255 251 235;
+    --color-accent-100: 254 243 199;
+    --color-accent-500: 245 158 11;
+    --color-accent-600: 217 119 6;
+    --color-accent-900: 120 53 15;
+  }
+
+  /* --- Surface Styles --- */
+  [data-surface='neutral'] {
+    --color-surface-50: 250 250 250;
+    --color-surface-100: 245 245 245;
+    --color-surface-200: 229 229 229;
+    --color-surface-300: 212 212 212;
+    --color-surface-400: 163 163 163;
+    --color-surface-500: 115 115 115;
+    --color-surface-600: 82 82 82;
+    --color-surface-700: 64 64 64;
+    --color-surface-800: 38 38 38;
+    --color-surface-900: 23 23 23;
+  }
+
+  [data-surface='stone'] {
+    --color-surface-50: 250 249 246;
+    --color-surface-100: 245 245 244;
+    --color-surface-200: 231 229 228;
+    --color-surface-300: 214 211 209;
+    --color-surface-400: 168 162 158;
+    --color-surface-500: 120 113 108;
+    --color-surface-600: 87 83 78;
+    --color-surface-700: 68 64 60;
+    --color-surface-800: 41 37 36;
+    --color-surface-900: 28 25 23;
+  }
+
+  [data-surface='tinted'] {
+    /* Uses Accent dynamically scaled down for backgrounds */
+    --color-surface-50: var(--color-accent-50);
+    --color-surface-100: var(--color-accent-100);
+    --color-surface-200: var(--color-accent-100);
+    --color-surface-300: var(--color-accent-100);
+    --color-surface-400: var(--color-accent-500);
+    --color-surface-500: var(--color-accent-500);
+    --color-surface-600: var(--color-accent-600);
+    --color-surface-700: var(--color-accent-600);
+    --color-surface-800: var(--color-accent-900);
+    --color-surface-900: var(--color-accent-900);
+  }
+
   body {
-    @apply bg-[#f8fafc] text-slate-800 antialiased font-sans;
+    @apply bg-surface-50 text-surface-800 antialiased font-sans transition-colors duration-200 dark:bg-surface-950 dark:text-surface-200;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Manrope', sans-serif;
-    @apply tracking-tight text-slate-900;
+    @apply tracking-tight text-surface-900 dark:text-surface-50;
   }
 }
 
@@ -23,9 +118,9 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded dark:bg-slate-700;
+  @apply bg-surface-300 rounded dark:bg-surface-700;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-slate-400 dark:bg-slate-600;
+  @apply bg-surface-400 dark:bg-surface-600;
 }

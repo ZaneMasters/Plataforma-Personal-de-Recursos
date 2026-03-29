@@ -8,22 +8,11 @@ interface TopBarProps {
   onReset?: () => void;
 }
 
-export function TopBar({ searchQuery, onSearchChange, productName = "LinkVault", breadcrumbs = ["Plataforma"], onReset }: TopBarProps) {
+export function TopBar({ searchQuery, onSearchChange, breadcrumbs = ["Plataforma"], onReset }: TopBarProps) {
   return (
     <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 z-10 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
       <div className="flex items-center space-x-8">
-        <div 
-          className="flex items-center gap-2 cursor-pointer group"
-          onClick={onReset}
-        >
-          <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-colors">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-            </svg>
-          </div>
-          <span className="font-display font-bold text-lg text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors">{productName}</span>
-        </div>
-        
+        {/* Logo and name removed per user request */}
         <div className="hidden md:flex items-center space-x-1">
           {breadcrumbs.map((crumb, i) => (
             <div key={crumb} className="flex items-center">

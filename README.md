@@ -9,19 +9,21 @@
 - **☁️ Firebase SaaS Architecture**: Integración total y nativa con el ecosistema de Google Cloud.
 - **🔐 Cuentas Privadas (Google Auth)**: Sistema de inicio de sesión obligatorio. Cada usuario tiene un entorno de base de datos aislado y cifrado que impide mezclarse con colecciones públicas.
 - **⚡ Sincronización en Tiempo Real (`onSnapshot`)**: Base de datos conectada en vivo por WebSocket. Al agregar o editar una tarjeta, los cambios se propagan a todos tus dispositivos activos simultáneamente, sin necesidad de actualizar la página.
-- **🖼️ Subida Custom de Imágenes**: Implementada una zona *"Arrastrar y Soltar"* (Drag & Drop) acoplada a `Firebase Storage` para guardar las imágenes de tus miniaturas de por vida.
-- **✨ Animaciones de Grado Nativo (`Framer Motion`)**: Transiciones suaves al expandir las tarjetas al estilo iOS/MacOS y explosiones de partículas dinámicas en el motor de Favoritos.
-- **🔔 Notificaciones Inteligentes**: Implementación de `react-hot-toast` para otorgar información inmediata al usuario (cargas asíncronas, éxitos de red o catástrofes de conexión).
-- **📂 Exportación (Backup)**: Descarga todo tu repositorio de base de datos personal al instante con un archivo JSON estructurado pulsando "Exportar Respaldo".
+- **🖼️ Optimización Inteligente de Imágenes**: Compresión ultraligera asistida en el cliente usando `browser-image-compression` (WebP) y subida vía *Drag & Drop* a `Firebase Storage`.
+- **🎨 Grados de Personalización Premium**: Modos de superficie estructurales (Pizarra, Neutro, Cálido, Tintado), múltiples Colores de Acento y sincronización entre dispositivos.
+- **📱 Arquitectura Mobile First**: Sidebar responsivo gestionado mediante un *Drawer* interactivo para brindar máxima área de trabajo en visualización móvil.
+- **✨ Experiencia de Usuario Refinada (`Framer Motion`)**: Animaciones suaves al interactuar, Autocompletado de sugerencias de categorías, y explosiones de partículas dinámicas en favoritos.
+- **📂 Exportación Inteligente (Excel)**: Descarga todo tu repositorio de base de datos personal al instante con un archivo Excel (`.xlsx`) completamente purificado y estructurado pulsando "Exportar a Excel".
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
 - **Framework Core**: React 18 + TypeScript (Vite)
-- **Estilos**: Tailwind CSS + Diseño UI personalizado "Arbor Slate"
-- **Iconografía**: Lucide React
+- **Estilos**: Tailwind CSS + Temas Multi-Superficie
+- **Componentes**: Lucide React (Iconografía) + React Hot Toast (Notificaciones)
 - **Animaciones**: Framer Motion
+- **Utilidades Extra**: browser-image-compression (Imágenes), xlsx (SheetJS para Backups Excel)
 - **Autenticación**: Firebase Auth (Google Provider)
 - **Base de Datos**: Firebase Firestore (NoSQL)
 - **Almacenamiento**: Firebase Storage

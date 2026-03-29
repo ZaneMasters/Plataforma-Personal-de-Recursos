@@ -3,6 +3,7 @@ import { X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase';
 import { toast } from 'react-hot-toast';
+import imageCompression from 'browser-image-compression';
 
 interface AddModalProps {
   onClose: () => void;
@@ -47,9 +48,27 @@ export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalPr
           setIsUploading(false);
           return;
         }
+        
+        toast.loading('Optimizando imagen...', { id: toastId });
+        let fileToUpload: File | Blob = imageFile;
+        let extension = imageFile.name.split('.').pop() || 'jpg';
+        
+        try {
+          const options = {
+            maxSizeMB: 0.15,
+            maxWidthOrHeight: 800,
+            useWebWorker: true,
+            fileType: 'image/webp'
+          };
+          fileToUpload = await imageCompression(imageFile, options);
+          extension = 'webp';
+        } catch (compErr) {
+          console.warn('Error comprimiendo la imagen. Subiendo original:', compErr);
+        }
+
         toast.loading('Subiendo imagen a la nube...', { id: toastId });
-        const storageRef = ref(storage, `links/${Date.now()}_${imageFile.name}`);
-        const snapshot = await uploadBytes(storageRef, imageFile);
+        const storageRef = ref(storage, `links/${Date.now()}_img.${extension}`);
+        const snapshot = await uploadBytes(storageRef, fileToUpload);
         imageUrl = await getDownloadURL(snapshot.ref);
       }
       

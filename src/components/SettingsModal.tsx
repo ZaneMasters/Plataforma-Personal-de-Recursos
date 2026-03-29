@@ -126,10 +126,10 @@ export function SettingsModal({ onClose, preferences, onUpdatePreferences, onExp
              <h3 className="text-sm font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider font-display">Datos</h3>
              <button
                onClick={onExport}
-               className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-200 font-bold text-sm transition-colors"
+               className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-200 font-bold text-sm transition-colors cursor-pointer"
              >
                 <Download className="w-4 h-4" />
-                <span>Exportar Respaldo Local (JSON)</span>
+                <span>Exportar a Excel (XLSX)</span>
              </button>
           </section>
 

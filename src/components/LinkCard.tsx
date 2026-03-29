@@ -6,6 +6,7 @@ import type { Link } from '../types';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase';
 import { toast } from 'react-hot-toast';
+import imageCompression from 'browser-image-compression';
 
 interface LinkCardProps {
   link: Link;
@@ -133,9 +134,27 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
            toast.error("Requiere conexión a Firebase.", { id: tId });
            setIsUploading(false); return;
         }
+
+        toast.loading('Optimizando imagen...', { id: tId });
+        let fileToUpload: File | Blob = imageFile;
+        let extension = imageFile.name.split('.').pop() || 'jpg';
+        
+        try {
+          const options = {
+            maxSizeMB: 0.15,
+            maxWidthOrHeight: 800,
+            useWebWorker: true,
+            fileType: 'image/webp'
+          };
+          fileToUpload = await imageCompression(imageFile, options);
+          extension = 'webp';
+        } catch (compErr) {
+          console.warn('Error comprimiendo la imagen. Subiendo original:', compErr);
+        }
+
         toast.loading('Subiendo nueva imagen...', { id: tId });
-        const storageRef = ref(storage, `links/${Date.now()}_${imageFile.name}`);
-        const snapshot = await uploadBytes(storageRef, imageFile);
+        const storageRef = ref(storage, `links/${Date.now()}_img.${extension}`);
+        const snapshot = await uploadBytes(storageRef, fileToUpload);
         imageUrl = await getDownloadURL(snapshot.ref);
       }
 

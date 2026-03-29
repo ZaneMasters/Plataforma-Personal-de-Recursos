@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { MainContent } from './components/MainContent';
+import * as XLSX from 'xlsx';
 import { AddModal } from './components/AddModal';
 import { SettingsModal } from './components/SettingsModal';
 import { mockLinks } from './data/mockData';
@@ -200,14 +201,24 @@ function App() {
   };
 
   const handleExport = () => {
-    const dataStr = JSON.stringify(links, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'linkvault_backup.json';
-    a.click();
-    URL.revokeObjectURL(url);
+    // Definimos los datos, omitiendo la imagen y el ID
+    const data = links.map(link => ({
+      'Título': link.title,
+      'URL': link.url,
+      'Categoría': link.category,
+      'Etiquetas': link.tags.length > 0 ? link.tags.join(', ') : '',
+      'Descripción': link.description,
+      'Fecha Modificación': link.modifiedAt,
+      'Favorito': link.isFavorite ? 'Sí' : 'No'
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Links Backup");
+
+    // Guardar archivo .xlsx
+    XLSX.writeFile(workbook, "linkvault_backup.xlsx");
+    toast.success("¡Respaldo XLSX descargado!");
   };
 
   // --- RENDERING --- //

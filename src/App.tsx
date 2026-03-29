@@ -89,7 +89,7 @@ function App() {
   const handleLogin = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-      toast.success("¡Bienvenido al Curador!");
+      toast.success("¡Bienvenido a LinkVault!");
     } catch (e: any) {
       console.error(e);
       if (e.code !== 'auth/popup-closed-by-user') {
@@ -258,7 +258,7 @@ function App() {
         <TopBar 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          productName="El Curador"
+          productName="LinkVault"
           breadcrumbs={breadcrumbs}
           onReset={() => {
             setSelectedCategory(null);

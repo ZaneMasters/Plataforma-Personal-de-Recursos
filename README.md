@@ -54,6 +54,7 @@ npm run dev
 La columna vertebral de este proyecto se sostiene gracias a tu cuenta de **Firebase Console**. Sigue los pasos al pie de la letra.
 
 ### 1. Variables de Entorno
+
 Copia la plantilla `.env.example` en un nuevo archivo invisible llamado estrictamente `.env` y rellena tus claves:
 
 ```env
@@ -67,12 +68,15 @@ VITE_FIREBASE_MEASUREMENT_ID="G-XXXXXX"
 ```
 
 ### 2. Autenticación (Google Auth)
+
 Para que el inicio de sesión funcione con éxito debes encender el interruptor:
+
 - Ve a tu Consola Firebase > **Authentication**.
 - Pestaña **Sign-in method** > Añade el proveedor de **Google**.
 - Guárdalo.
 
 ### 3. Base de Datos Rápida (Test Mode)
+
 En Firebase > **Firestore Database** asegúrate de ir a las *Reglas* (Rules) para permitir a la app sobreescribir tus documentos sin chocar con barreras administrativas estrictas (Procura añadir validaciones en producción final).
 
 ```javascript
@@ -85,27 +89,7 @@ service cloud.firestore {
     }
   }
 }
-```
 
-### 4. Permisos de Subida CORS (Storage)
-Para que `Firebase Storage` acepte subir tus imágenes directamente desde `http://localhost:5173`, necesitas abrir permisos **CORS** obligatorios vía Consola de Comando Cloud (`Google Cloud Shell`).
-Escribe el siguiente archivo adentro marcando tu ID de Storage respectivo:
-
-```bash
-cat <<EOF > cors.json
-[
-  {
-    "origin": ["*"],
-    "method": ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
-    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin", "x-goog-resumable"],
-    "maxAgeSeconds": 3600
-  }
-]
-EOF
-
-# Inyectalo a tu Storage
-gsutil cors set cors.json gs://TU-PROYECTO.firebasestorage.app
-```
 
 ---
 

@@ -425,7 +425,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
 
       <AnimatePresence>
         {isExpanded && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 pointer-events-none">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

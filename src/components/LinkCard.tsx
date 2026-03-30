@@ -238,7 +238,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                     {link.category}
                   </div>
                 )}
-                <motion.h3 layoutId={`title-${link.id}`} className={`font-cookie text-surface-900 dark:text-surface-100 leading-tight ${expanded ? 'text-4xl sm:text-5xl mb-3' : isFeatured ? 'text-2xl' : 'text-xl truncate max-w-xs'}`}>
+                <motion.h3 layoutId={`title-${link.id}`} className={`font-cookie text-surface-900 dark:text-surface-100 leading-tight ${expanded ? 'text-5xl sm:text-6xl mb-3' : isFeatured ? 'text-3xl' : 'text-2xl truncate max-w-xs'}`}>
                   {link.title}
                 </motion.h3>
               </div>

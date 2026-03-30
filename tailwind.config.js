@@ -35,7 +35,7 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['"Poiret One"', 'sans-serif'],
         display: ['Manrope', 'sans-serif'],
         cookie: ['Cookie', 'cursive'],
       }

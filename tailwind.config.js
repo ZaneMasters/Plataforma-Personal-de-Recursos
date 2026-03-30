@@ -37,6 +37,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         display: ['Manrope', 'sans-serif'],
+        cookie: ['Cookie', 'cursive'],
       }
     },
   },

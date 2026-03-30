@@ -11,12 +11,14 @@ export interface UserPreferences {
   theme: ThemeType;
   colorPalette: ColorPalette;
   surfaceStyle: SurfaceStyle;
+  categoryColors: Record<string, string>;
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   theme: 'light',
   colorPalette: 'blue',
-  surfaceStyle: 'slate'
+  surfaceStyle: 'slate',
+  categoryColors: {}
 };
 
 export function useUserPreferences(user?: User | null) {
@@ -73,18 +75,21 @@ export function useUserPreferences(user?: User | null) {
      const docRef = doc(db, 'users', user.uid);
      
      const unsubscribe = onSnapshot(docRef, (docSnap) => {
-        if (docSnap.exists()) {
+         if (docSnap.exists()) {
            const data = docSnap.data();
            if (data.preferences) {
               setPreferences((prev) => {
                  // only update if different to avoid looping
                  if (prev.theme !== data.preferences.theme || prev.colorPalette !== data.preferences.colorPalette || prev.surfaceStyle !== data.preferences.surfaceStyle) {
-                    return { ...prev, ...data.preferences };
+                    return { ...prev, ...data.preferences, categoryColors: { ...prev.categoryColors, ...(data.preferences.categoryColors || {}) } };
+                 }
+                 if (JSON.stringify(prev.categoryColors) !== JSON.stringify(data.preferences.categoryColors || {})) {
+                    return { ...prev, categoryColors: { ...prev.categoryColors, ...(data.preferences.categoryColors || {}) } };
                  }
                  return prev;
               });
            }
-        }
+         }
      });
 
      return () => unsubscribe();

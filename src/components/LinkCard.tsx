@@ -15,6 +15,7 @@ interface LinkCardProps {
   onUpdateLink: (updatedData: Partial<Link>) => void;
   onDeleteLink: () => void;
   existingCategories?: string[];
+  categoryColor?: string;
 }
 
 const AnimatedStarButton = ({ isFavorite, onClick }: { isFavorite: boolean | undefined; onClick: (e: React.MouseEvent) => void }) => {
@@ -82,7 +83,7 @@ const AnimatedStarButton = ({ isFavorite, onClick }: { isFavorite: boolean | und
   );
 };
 
-export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDeleteLink, existingCategories = [] }: LinkCardProps) {
+export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDeleteLink, existingCategories = [], categoryColor }: LinkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -232,17 +233,12 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
           <>
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1 pr-4">
-                {!expanded && (
-                  <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 mb-2 border border-surface-200 dark:border-surface-700">
-                    {link.category}
-                  </span>
-                )}
                 {expanded && (
                   <div className="inline-block px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 mb-3 border border-surface-200 dark:border-surface-700">
                     {link.category}
                   </div>
                 )}
-                <motion.h3 layoutId={`title-${link.id}`} className={`font-display font-bold text-surface-900 dark:text-surface-100 leading-tight ${expanded ? 'text-3xl sm:text-4xl mb-3' : isFeatured ? 'text-xl' : 'text-base truncate max-w-xs'}`}>
+                <motion.h3 layoutId={`title-${link.id}`} className={`font-cookie text-surface-900 dark:text-surface-100 leading-tight ${expanded ? 'text-4xl sm:text-5xl mb-3' : isFeatured ? 'text-2xl' : 'text-xl truncate max-w-xs'}`}>
                   {link.title}
                 </motion.h3>
               </div>
@@ -417,6 +413,14 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
           ${isFeatured ? 'col-span-1 sm:col-span-2 lg:col-span-2 row-span-2' : ''} 
           ${viewMode === 'list' ? 'flex items-center h-24' : 'flex flex-col h-full'}`
         }
+        style={!isExpanded && categoryColor ? (() => {
+            const isDark = document.documentElement.classList.contains('dark');
+            return {
+              background: isDark
+                ? `linear-gradient(145deg, ${categoryColor}72 0%, ${categoryColor}44 55%, ${categoryColor}22 100%)`
+                : `linear-gradient(145deg, ${categoryColor}42 0%, ${categoryColor}22 55%, ${categoryColor}0e 100%)`
+            };
+          })() : undefined}
       >
         <div className="w-full h-full transition-opacity duration-300">
           {!isExpanded && renderInternalContent(false)}

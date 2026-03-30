@@ -257,6 +257,18 @@ function App() {
 
   const existingCategories = Array.from(new Set(links.map(link => link.category))).sort();
 
+  const categoryColors = preferences.categoryColors || {};
+
+  const handleSetCategoryColor = (category: string, color: string) => {
+    const updated = { ...categoryColors };
+    if (color) {
+      updated[category] = color;
+    } else {
+      delete updated[category];
+    }
+    updatePreferences({ categoryColors: updated });
+  };
+
   const breadcrumbs = ["LinkVault"];
   if (selectedCategory === '__FAVORITES__') {
     breadcrumbs.push("Favoritos");
@@ -285,19 +297,21 @@ function App() {
           selectedCategory={selectedCategory}
           onSelectCategory={(cat) => {
              setSelectedCategory(cat);
-             setIsMobileMenuOpen(false); // Close mobile drawer when a category is picked
+             setIsMobileMenuOpen(false);
           }}
           onAddClick={() => {
              setIsAddModalOpen(true);
-             setIsMobileMenuOpen(false); // Close mobile drawer when adding link
+             setIsMobileMenuOpen(false);
           }} 
           user={user}
           onLogout={handleLogout}
           onSettingsClick={() => {
              setIsSettingsModalOpen(true);
-             setIsMobileMenuOpen(false); // Close mobile drawer on settings open
+             setIsMobileMenuOpen(false);
           }}
           onCloseMobile={() => setIsMobileMenuOpen(false)}
+          categoryColors={categoryColors}
+          onSetCategoryColor={handleSetCategoryColor}
         />
       </div>
       
@@ -322,6 +336,7 @@ function App() {
           onUpdateLink={handleUpdateLink}
           onDeleteLink={handleDeleteLink}
           existingCategories={existingCategories}
+          categoryColors={categoryColors}
         />
       </div>
 

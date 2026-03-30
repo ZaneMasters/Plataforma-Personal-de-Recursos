@@ -114,13 +114,13 @@ export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalPr
       <div className="absolute inset-0 bg-surface-900/60 dark:bg-surface-900/80 backdrop-blur-sm" onClick={onClose} />
       <div className="bg-white dark:bg-surface-800 rounded border border-surface-200 dark:border-surface-700 shadow-2xl w-full max-w-[600px] relative z-10 flex flex-col max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-surface-100 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50">
-          <h2 className="font-display font-bold text-lg text-surface-800 dark:text-surface-100">Añadir Nueva Referencia</h2>
+          <h2 className="font-cookie text-3xl text-surface-800 dark:text-surface-100">Añadir Nueva Referencia</h2>
           <button onClick={onClose} disabled={isUploading} className="text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 p-1 disabled:opacity-50 transition-colors"><X className="w-5 h-5"/></button>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
           <div className="col-span-1 border-b border-surface-100 dark:border-surface-700 pb-5">
-            <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-2">Imagen de Portada</label>
+              <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Imagen de Portada</label>
             <div 
               onDragOver={handleDragOver}
               onDrop={handleDrop}
@@ -154,15 +154,15 @@ export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalPr
 
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">URL <span className="text-red-500">*</span></label>
+              <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>URL <span className="text-red-500">*</span></label>
               <input required type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
             </div>
             <div className="col-span-2">
-              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Título <span className="text-red-500">*</span></label>
+              <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Título <span className="text-red-500">*</span></label>
               <input required type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Título de la referencia" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
             </div>
             <div className="col-span-1">
-              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Categoría</label>
+              <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Categoría</label>
               <input type="text" value={category} onChange={e => setCategory(e.target.value)} placeholder="ej. Sistemas de Diseño" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
               {existingCategories.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -184,11 +184,11 @@ export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalPr
               )}
             </div>
             <div className="col-span-1">
-              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Etiquetas</label>
+              <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Etiquetas</label>
               <input type="text" value={tags} onChange={e => setTags(e.target.value)} placeholder="Separadas por coma (ej. react, ui)" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
             </div>
             <div className="col-span-2">
-              <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Notas</label>
+              <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Notas</label>
               <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Descripción corta..." rows={3} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 resize-none focus:shadow-sm transition-shadow" />
             </div>
           </div>

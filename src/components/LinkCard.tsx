@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Clock, Tag, X, Star, Edit2, Save, Image as ImageIcon, Loader2, Trash2 } from 'lucide-react';
 import type { Link } from '../types';
@@ -320,7 +321,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
              onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-2">
-               <h3 className="font-display font-bold text-2xl text-surface-800 dark:text-surface-100">Editar Referencia</h3>
+               <h3 className="font-cookie text-3xl text-surface-800 dark:text-surface-100">Editar Referencia</h3>
                <div 
                   className="px-4 py-2 border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-lg flex items-center justify-center cursor-pointer hover:border-accent-400 hover:bg-accent-50/50 dark:hover:border-accent-500 dark:hover:bg-accent-900/30 transition-colors"
                   onClick={() => fileInputRef.current?.click()}
@@ -334,15 +335,15 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
             
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Título</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Título</label>
                 <input type="text" value={editTitle} onChange={e => setEditTitle(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
               </div>
               <div className="col-span-2">
-                <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">URL</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>URL</label>
                 <input type="url" value={editUrl} onChange={e => setEditUrl(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
               </div>
               <div className="col-span-1">
-                <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Categoría</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Categoría</label>
                 <input type="text" value={editCategory} onChange={e => setEditCategory(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
                 {existingCategories.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -364,11 +365,11 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                 )}
               </div>
               <div className="col-span-1">
-                <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Etiquetas (separadas por coma)</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Etiquetas (separadas por coma)</label>
                 <input type="text" value={editTags} onChange={e => setEditTags(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
               </div>
               <div className="col-span-2">
-                <label className="block text-[11px] font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1.5">Notas / Descripción</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Notas / Descripción</label>
                 <textarea rows={4} value={editDesc} onChange={e => setEditDesc(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 resize-none" />
               </div>
             </div>
@@ -405,15 +406,13 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
   return (
     <>
       <motion.div
-        layoutId={`card-wrapper-${link.id}`}
-        transition={{ layout: { duration: 0.15, type: "tween" } }}
         whileHover={{ y: -4 }}
         onClick={() => !isExpanded && setIsExpanded(true)}
-        className={`bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden cursor-pointer transition-shadow duration-300 hover:bg-surface-50 dark:hover:bg-surface-700/50 hover:shadow-xl hover:z-10 rounded w-full 
+        className={`bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden cursor-pointer transition-shadow duration-300 hover:shadow-xl hover:z-10 rounded w-full 
           ${isFeatured ? 'col-span-1 sm:col-span-2 lg:col-span-2 row-span-2' : ''} 
           ${viewMode === 'list' ? 'flex items-center h-24' : 'flex flex-col h-full'}`
         }
-        style={!isExpanded && categoryColor ? (() => {
+        style={categoryColor ? (() => {
             const isDark = document.documentElement.classList.contains('dark');
             return {
               background: isDark
@@ -422,35 +421,38 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
             };
           })() : undefined}
       >
-        <div className="w-full h-full transition-opacity duration-300">
-          {!isExpanded && renderInternalContent(false)}
+        <div className="w-full h-full">
+          {renderInternalContent(false)}
         </div>
       </motion.div>
 
       <AnimatePresence>
-        {isExpanded && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 pointer-events-none">
+        {isExpanded && createPortal(
+          <div className="fixed inset-0 z-[9990] flex items-center justify-center p-4 sm:p-6 lg:p-8">
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="absolute inset-0 bg-surface-900/50 dark:bg-surface-900/80 backdrop-blur-sm"
+              transition={{ duration: 0.18 }}
+              className="absolute inset-0 bg-surface-900/60 dark:bg-surface-900/85 backdrop-blur-sm"
               onClick={onCollapse}
             />
-            
-            <motion.div 
-              layoutId={`card-wrapper-${link.id}`} 
-              className="bg-white dark:bg-surface-800 rounded-lg shadow-2xl overflow-hidden relative z-10 w-full max-w-4xl max-h-[90vh] flex flex-col pointer-events-auto"
-              style={{ borderRadius: '0.5rem' }}
-            >
 
-              {/* OVERLAY DELETE POPUP MODAL */}
+            {/* Modal panel */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.93, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.93, y: 16 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="bg-white dark:bg-surface-800 rounded-xl shadow-2xl overflow-hidden relative z-10 w-full max-w-4xl max-h-[90vh] flex flex-col"
+            >
+              {/* Delete confirm overlay */}
               <AnimatePresence>
                 {showDeleteConfirm && (
-                  <motion.div 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
                     className="absolute inset-0 bg-white/95 dark:bg-surface-800/95 backdrop-blur-sm z-[100] flex flex-col items-center justify-center p-8 text-center"
@@ -461,16 +463,16 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                     </div>
                     <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-50 mb-2 font-display tracking-tight">¿Eliminar Definitivamente?</h3>
                     <p className="text-surface-500 dark:text-surface-400 mb-8 max-w-sm leading-relaxed text-sm">
-                      Estás a punto de borrar "{link.title}". Esta acción eliminará los datos y su imagen de tu base de datos y no se puede deshacer.
+                      Estás a punto de borrar &quot;{link.title}&quot;. Esta acción eliminará los datos y su imagen de tu base de datos y no se puede deshacer.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center gap-3">
-                      <button 
+                      <button
                         className="px-6 py-2.5 text-sm font-bold text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700/50 rounded-lg transition-colors w-full sm:w-auto"
                         onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}
                       >
                         Cancelar
                       </button>
-                      <button 
+                      <button
                         className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded shadow-sm transition-all active:scale-95 w-full sm:w-auto"
                         onClick={handleDelete}
                       >
@@ -480,12 +482,13 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                   </motion.div>
                 )}
               </AnimatePresence>
-              
+
               <div className="flex-1 overflow-y-auto w-full flex flex-col relative h-full">
                 {renderInternalContent(true)}
               </div>
             </motion.div>
-          </div>
+          </div>,
+          document.body
         )}
       </AnimatePresence>
     </>

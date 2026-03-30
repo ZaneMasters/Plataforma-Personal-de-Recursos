@@ -187,11 +187,10 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
 
   const renderInternalContent = (expanded: boolean) => (
     <>
-      <motion.div 
-        layoutId={`image-container-${link.id}`} 
+      <div
         className={
-          expanded ? 'w-full h-80 sm:h-96 relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700' : 
-          viewMode === 'grid' ? (isFeatured ? 'w-full h-48 relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700' : 'w-full aspect-video relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700') : 
+          expanded ? 'w-full h-80 sm:h-96 relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700' :
+          viewMode === 'grid' ? (isFeatured ? 'w-full h-48 relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700' : 'w-full aspect-video relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700') :
           'w-24 h-full shrink-0 border-r border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800'
         }
       >
@@ -226,7 +225,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
              </button>
           </div>
         )}
-      </motion.div>
+      </div>
 
       <div className={`flex flex-col flex-1 ${expanded ? 'p-8 sm:p-12' : viewMode === 'grid' ? 'p-5' : 'py-3 px-5 justify-center'}`}>
         {!isEditing ? (
@@ -239,9 +238,9 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                     {link.category}
                   </div>
                 )}
-                <motion.h3 layoutId={`title-${link.id}`} className={`font-cookie text-surface-900 dark:text-surface-100 leading-tight ${expanded ? 'text-5xl sm:text-6xl mb-3' : isFeatured ? 'text-3xl' : 'text-2xl truncate max-w-xs'}`}>
+                <h3 className={`font-cookie text-surface-900 dark:text-surface-100 leading-tight ${expanded ? 'text-5xl sm:text-6xl mb-3' : isFeatured ? 'text-3xl' : 'text-2xl truncate max-w-xs'}`}>
                   {link.title}
-                </motion.h3>
+                </h3>
               </div>
               <div className="flex items-center space-x-2 shrink-0 relative z-10">
                 <AnimatedStarButton isFavorite={link.isFavorite} onClick={onToggleFavorite} />
@@ -260,15 +259,14 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
               </div>
             </div>
             
-            <motion.p
-              layoutId={`desc-${link.id}`}
+            <p
               className={`text-surface-600 dark:text-surface-400 font-medium ${expanded ? 'mb-8 text-lg leading-relaxed' : isFeatured ? 'text-sm mb-4 line-clamp-3' : 'text-xs mb-4 line-clamp-2'}`}
             >
               {link.description}
-            </motion.p>
+            </p>
 
             <div className="mt-auto flex justify-between items-center">
-              <motion.div layoutId={`tags-${link.id}`} className={`flex flex-wrap gap-1.5 ${expanded ? 'mb-4' : ''}`}>
+              <div className={`flex flex-wrap gap-1.5 ${expanded ? 'mb-4' : ''}`}>
                 {link.tags.slice(0, expanded ? link.tags.length : isFeatured ? 3 : 1).map(tag => (
                   <span key={tag} className="inline-flex items-center px-1.5 py-0.5 rounded bg-surface-100 dark:bg-surface-800 text-[11px] font-semibold text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-700">
                     <Tag className="w-3 h-3 mr-1 opacity-40 hidden md:inline-block" />
@@ -280,7 +278,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                     +{link.tags.length - (isFeatured ? 3 : 1)}
                   </span>
                 )}
-              </motion.div>
+              </div>
               
               {!expanded && link.modifiedAt && (
                 <div className="flex items-center text-surface-400 text-[11px] font-medium shrink-0 ml-4">
@@ -422,7 +420,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
           })() : undefined}
       >
         <div className="w-full h-full">
-          {renderInternalContent(false)}
+          {!isExpanded && renderInternalContent(false)}
         </div>
       </motion.div>
 

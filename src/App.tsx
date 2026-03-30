@@ -4,6 +4,7 @@ import { TopBar } from './components/TopBar';
 import { MainContent } from './components/MainContent';
 import * as XLSX from 'xlsx';
 import { AddModal } from './components/AddModal';
+import { AuthScreen } from './components/AuthScreen';
 import { SettingsModal } from './components/SettingsModal';
 import { mockLinks } from './data/mockData';
 import type { Link } from './types';
@@ -14,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 // Firebase imports
 import { collection, onSnapshot, setDoc, doc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
-import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
+import { signInWithPopup, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { db, storage, auth, googleProvider } from './lib/firebase';
 
@@ -104,6 +105,16 @@ function App() {
         toast.error("Hubo un error al iniciar sesión.");
       }
     }
+  };
+
+  const handleEmailLogin = async (email: string, password: string) => {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    toast.success(`¡Bienvenido de vuelta, ${cred.user.email}!`);
+  };
+
+  const handleEmailRegister = async (email: string, password: string) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    toast.success(`¡Cuenta creada! Bienvenido, ${cred.user.email}`);
   };
 
   const handleLogout = async () => {
@@ -234,29 +245,11 @@ function App() {
   // Si existe llave de Firebase pero no hay usuario logueado -> Pantalla de Inicio
   if (import.meta.env.VITE_FIREBASE_API_KEY && !user) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-surface-50 dark:bg-[#0b1120] relative overflow-hidden font-sans transition-colors duration-200">
-        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-accent-100 dark:bg-accent-900/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-50"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-amber-100 dark:bg-amber-900/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-50"></div>
-        
-        <div className="bg-white dark:bg-surface-800 p-10 rounded-2xl shadow-xl z-10 max-w-sm w-full border border-surface-100 dark:border-surface-700 flex flex-col items-center">
-            <div className="w-16 h-16 bg-surface-900 dark:bg-surface-700 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
-              <svg className="w-8 h-8 text-white dark:text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-display font-black text-surface-900 dark:text-surface-50 tracking-tight mb-2">LinkVault</h1>
-            <p className="text-surface-500 dark:text-surface-400 text-center text-sm mb-8 leading-relaxed">Conecta tu cuenta para acceder a tu ecosistema privado de referencias y recursos.</p>
-            
-            <button 
-                onClick={handleLogin}
-                className="w-full flex items-center justify-center space-x-3 bg-white dark:bg-surface-800 border border-surface-300 dark:border-surface-600 text-surface-700 dark:text-surface-200 py-3 px-4 rounded-xl font-bold hover:bg-surface-50 dark:hover:bg-surface-700 hover:shadow-sm transition-all active:scale-95"
-            >
-               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-               <span>Ingresar con Google</span>
-            </button>
-        </div>
-        <Toaster position="bottom-right" toastOptions={{ className: 'font-sans font-medium text-sm rounded shadow-lg' }} />
-      </div>
+      <AuthScreen
+        onGoogleLogin={handleLogin}
+        onEmailLogin={handleEmailLogin}
+        onEmailRegister={handleEmailRegister}
+      />
     );
   }
 

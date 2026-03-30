@@ -424,71 +424,75 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
         </div>
       </motion.div>
 
-      <AnimatePresence>
-        {isExpanded && createPortal(
-          <div className="fixed inset-0 z-[9990] flex items-center justify-center p-4 sm:p-6 lg:p-8">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              className="absolute inset-0 bg-surface-900/60 dark:bg-surface-900/85 backdrop-blur-sm"
-              onClick={onCollapse}
-            />
+      {createPortal(
+        <AnimatePresence>
+          {isExpanded && (
+            <div className="fixed inset-0 z-[9990] flex items-center justify-center p-4 sm:p-6 lg:p-8">
+              {/* Backdrop */}
+              <motion.div
+                key="backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="absolute inset-0 bg-surface-900/60 dark:bg-surface-900/85 backdrop-blur-sm"
+                onClick={onCollapse}
+              />
 
-            {/* Modal panel */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.93, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.93, y: 16 }}
-              transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="bg-white dark:bg-surface-800 rounded-xl shadow-2xl overflow-hidden relative z-10 w-full max-w-4xl max-h-[90vh] flex flex-col"
-            >
-              {/* Delete confirm overlay */}
-              <AnimatePresence>
-                {showDeleteConfirm && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute inset-0 bg-white/95 dark:bg-surface-800/95 backdrop-blur-sm z-[100] flex flex-col items-center justify-center p-8 text-center"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-6 border border-red-200 dark:border-red-900/50">
-                      <Trash2 className="w-8 h-8" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-50 mb-2 font-display tracking-tight">¿Eliminar Definitivamente?</h3>
-                    <p className="text-surface-500 dark:text-surface-400 mb-8 max-w-sm leading-relaxed text-sm">
-                      Estás a punto de borrar &quot;{link.title}&quot;. Esta acción eliminará los datos y su imagen de tu base de datos y no se puede deshacer.
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center gap-3">
-                      <button
-                        className="px-6 py-2.5 text-sm font-bold text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700/50 rounded-lg transition-colors w-full sm:w-auto"
-                        onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded shadow-sm transition-all active:scale-95 w-full sm:w-auto"
-                        onClick={handleDelete}
-                      >
-                        Sí, Descartar Enlace
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Modal panel */}
+              <motion.div
+                key="modal"
+                initial={{ opacity: 0, scale: 0.93, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.93, y: 16 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="bg-white dark:bg-surface-800 rounded-xl shadow-2xl overflow-hidden relative z-10 w-full max-w-4xl max-h-[90vh] flex flex-col"
+              >
+                {/* Delete confirm overlay */}
+                <AnimatePresence>
+                  {showDeleteConfirm && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute inset-0 bg-white/95 dark:bg-surface-800/95 backdrop-blur-sm z-[100] flex flex-col items-center justify-center p-8 text-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-6 border border-red-200 dark:border-red-900/50">
+                        <Trash2 className="w-8 h-8" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-50 mb-2 font-display tracking-tight">¿Eliminar Definitivamente?</h3>
+                      <p className="text-surface-500 dark:text-surface-400 mb-8 max-w-sm leading-relaxed text-sm">
+                        Estás a punto de borrar &quot;{link.title}&quot;. Esta acción eliminará los datos y su imagen de tu base de datos y no se puede deshacer.
+                      </p>
+                      <div className="flex flex-col sm:flex-row items-center gap-3">
+                        <button
+                          className="px-6 py-2.5 text-sm font-bold text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700/50 rounded-lg transition-colors w-full sm:w-auto"
+                          onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded shadow-sm transition-all active:scale-95 w-full sm:w-auto"
+                          onClick={handleDelete}
+                        >
+                          Sí, Descartar Enlace
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-              <div className="flex-1 overflow-y-auto w-full flex flex-col relative h-full">
-                {renderInternalContent(true)}
-              </div>
-            </motion.div>
-          </div>,
-          document.body
-        )}
-      </AnimatePresence>
+                <div className="flex-1 overflow-y-auto w-full flex flex-col relative h-full">
+                  {renderInternalContent(true)}
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }

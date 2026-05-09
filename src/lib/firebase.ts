@@ -26,3 +26,6 @@ export const storage = getStorage(app);
 // Initialize Firebase Authentication and provider
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+
+//hoaksdasd

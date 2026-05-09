@@ -1,5 +1,4 @@
 import { LinkCard } from './LinkCard';
-import { motion } from 'framer-motion';
 import { FolderOpen } from 'lucide-react';
 import type { Link } from '../types';
 

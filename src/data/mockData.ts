@@ -8,7 +8,7 @@ export const mockLinks: Link[] = [
     image: "https://developer.apple.com/design/human-interface-guidelines/images/intro/hero_2x.png",
     url: "https://developer.apple.com/design/human-interface-guidelines/",
     category: "Design Systems",
-    tags: ["apple", "design", "system"],
+    subcategory: "apple",
     featured: true,
     modifiedAt: "2 hours ago"
   },
@@ -19,7 +19,7 @@ export const mockLinks: Link[] = [
     image: "https://lh3.googleusercontent.com/rN9gB7e2pUj2U_F7bM-k2Cg-ZItT3LzXZ68M_bN6n6sM_vQ_n3QzF5Ew-G_7jE4X3zL3F-Z5sU=w1024",
     url: "https://m3.material.io/",
     category: "Design Systems",
-    tags: ["google", "material", "design"],
+    subcategory: "google",
     featured: false,
     modifiedAt: "1 day ago"
   },
@@ -30,7 +30,7 @@ export const mockLinks: Link[] = [
     image: "https://ui.shadcn.com/og.jpg",
     url: "https://ui.shadcn.com/",
     category: "Component Libraries",
-    tags: ["react", "tailwind", "components"],
+    subcategory: "react",
     featured: true,
     modifiedAt: "4 days ago"
   },
@@ -41,7 +41,7 @@ export const mockLinks: Link[] = [
     image: "https://nextjs.org/api/docs-og?title=Next.js%2014",
     url: "https://nextjs.org",
     category: "Web Frameworks",
-    tags: ["react", "framework", "ssr"],
+    subcategory: "react",
     featured: true,
     modifiedAt: "Last week"
   },
@@ -52,7 +52,7 @@ export const mockLinks: Link[] = [
     image: "https://vitejs.dev/og-image.webp",
     url: "https://vitejs.dev/",
     category: "Web Frameworks",
-    tags: ["tooling", "build", "fast"],
+    subcategory: "tooling",
     featured: false,
     modifiedAt: "2 weeks ago"
   }

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Tag, X, Star, Edit2, Save, Image as ImageIcon, Loader2, Trash2, FolderMinus } from 'lucide-react';
+import { ExternalLink, X, Star, Edit2, Save, Image as ImageIcon, Loader2, Trash2, FolderMinus } from 'lucide-react';
 import type { Link } from '../types';
 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';

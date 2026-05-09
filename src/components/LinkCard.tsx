@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Clock, Tag, X, Star, Edit2, Save, Image as ImageIcon, Loader2, Trash2 } from 'lucide-react';
+import { ExternalLink, Tag, X, Star, Edit2, Save, Image as ImageIcon, Loader2, Trash2 } from 'lucide-react';
 import type { Link } from '../types';
 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -186,18 +186,32 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
   };
 
   const renderInternalContent = (expanded: boolean) => (
-    <>
+    <div className={expanded ? 'flex flex-col w-full h-full' : viewMode === 'list' ? 'flex flex-row items-stretch w-full h-full' : 'flex flex-col w-full h-full'}>
       <div
         className={
-          expanded ? 'w-full h-80 sm:h-96 relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700' :
-          viewMode === 'grid' ? (isFeatured ? 'w-full h-48 relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700' : 'w-full aspect-video relative shrink-0 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700') :
-          'w-24 h-full shrink-0 border-r border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800'
+          expanded
+            ? 'w-full shrink-0 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-center px-6 py-4 relative'
+            : viewMode === 'grid'
+              ? (isFeatured
+                  ? 'w-full h-52 shrink-0 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden p-2'
+                  : 'w-full aspect-video shrink-0 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden p-2')
+              : 'w-24 h-24 shrink-0 border-r border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 flex items-center justify-center overflow-hidden p-1'
         }
+        style={{ backgroundImage: 'radial-gradient(circle, var(--tw-gradient-stops))', backgroundSize: '8px 8px' }}
       >
-        <img src={imagePreview || link.image} alt={link.title} className="w-full h-full object-cover" />
+        <img
+          src={imagePreview || link.image}
+          alt={link.title}
+          className={expanded
+            ? 'max-w-full max-h-72 sm:max-h-96 w-auto h-auto object-contain rounded shadow-md'
+            : viewMode === 'list'
+              ? 'w-full h-full object-contain'
+              : 'w-full h-full object-contain'
+          }
+        />
         
         {expanded && (
-          <div className="absolute top-6 right-6 flex items-center space-x-2 z-10">
+          <div className="absolute top-4 right-4 flex items-center space-x-2 z-10">
             {!isEditing && !showDeleteConfirm && (
               <>
                 <button 
@@ -227,25 +241,50 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
         )}
       </div>
 
-      <div className={`flex flex-col flex-1 ${expanded ? 'p-8 sm:p-12' : viewMode === 'grid' ? 'p-5' : 'py-3 px-5 justify-center'}`}>
+      <div className={`flex flex-col flex-1 min-w-0 ${expanded ? 'p-8 sm:p-12' : viewMode === 'grid' ? 'p-5' : 'py-3 px-4 justify-center'}`}>
         {!isEditing ? (
           // --- READ MODE ---
           <>
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1 pr-4">
-                {expanded && (
-                  <div className="inline-block px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 mb-3 border border-surface-200 dark:border-surface-700">
-                    {link.category}
+            {/* Título */}
+            <div className="flex-1 min-w-0 mb-3">
+              {expanded && (
+                <div className="inline-block px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 mb-3 border border-surface-200 dark:border-surface-700">
+                  {link.category}
+                </div>
+              )}
+              <h3 className={`font-cookie text-surface-900 dark:text-surface-100 leading-tight truncate ${expanded ? 'text-5xl sm:text-6xl mb-3 whitespace-normal' : isFeatured ? 'text-3xl' : 'text-2xl'}`}>
+                {link.title}
+              </h3>
+            </div>
+
+            {/* Descripción solo en grid/expanded */}
+            {viewMode !== 'list' && (
+              <p className={`text-surface-600 dark:text-surface-400 font-medium ${expanded ? 'mb-8 text-lg leading-relaxed' : isFeatured ? 'text-sm mb-3 line-clamp-3' : 'text-xs mb-3 line-clamp-2'}`}>
+                {link.description}
+              </p>
+            )}
+
+            {/* Barra inferior — tags + iconos acción */}
+            {!expanded && (
+              <div className="mt-auto flex items-center justify-between gap-2">
+                {viewMode !== 'list' && (
+                  <div className="flex flex-wrap gap-1.5 min-w-0">
+                    {link.tags.slice(0, isFeatured ? 3 : 1).map(tag => (
+                      <span key={tag} className="inline-flex items-center px-1.5 py-0.5 rounded bg-surface-100 dark:bg-surface-800 text-[11px] font-semibold text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-700">
+                        <Tag className="w-3 h-3 mr-1 opacity-40 hidden md:inline-block" />
+                        {tag}
+                      </span>
+                    ))}
+                    {link.tags.length > (isFeatured ? 3 : 1) && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium text-surface-400 dark:text-surface-500">
+                        +{link.tags.length - (isFeatured ? 3 : 1)}
+                      </span>
+                    )}
                   </div>
                 )}
-                <h3 className={`font-cookie text-surface-900 dark:text-surface-100 leading-tight ${expanded ? 'text-5xl sm:text-6xl mb-3' : isFeatured ? 'text-3xl' : 'text-2xl truncate max-w-xs'}`}>
-                  {link.title}
-                </h3>
-              </div>
-              <div className="flex items-center space-x-2 shrink-0 relative z-10">
-                <AnimatedStarButton isFavorite={link.isFavorite} onClick={onToggleFavorite} />
-                {viewMode === 'grid' && !expanded && (
-                  <a 
+                <div className="flex items-center space-x-2 shrink-0 relative z-10 ml-auto">
+                  <AnimatedStarButton isFavorite={link.isFavorite} onClick={onToggleFavorite} />
+                  <a
                     href={link.url}
                     target="_blank"
                     rel="noreferrer"
@@ -255,49 +294,29 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>
-                )}
+                </div>
               </div>
-            </div>
-            
-            <p
-              className={`text-surface-600 dark:text-surface-400 font-medium ${expanded ? 'mb-8 text-lg leading-relaxed' : isFeatured ? 'text-sm mb-4 line-clamp-3' : 'text-xs mb-4 line-clamp-2'}`}
-            >
-              {link.description}
-            </p>
+            )}
 
-            <div className="mt-auto flex justify-between items-center">
-              <div className={`flex flex-wrap gap-1.5 ${expanded ? 'mb-4' : ''}`}>
-                {link.tags.slice(0, expanded ? link.tags.length : isFeatured ? 3 : 1).map(tag => (
+            {/* Tags en modo expandido */}
+            {expanded && (
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {link.tags.map(tag => (
                   <span key={tag} className="inline-flex items-center px-1.5 py-0.5 rounded bg-surface-100 dark:bg-surface-800 text-[11px] font-semibold text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-700">
                     <Tag className="w-3 h-3 mr-1 opacity-40 hidden md:inline-block" />
                     {tag}
                   </span>
                 ))}
-                {!expanded && link.tags.length > (isFeatured ? 3 : 1) && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium text-surface-400 dark:text-surface-500">
-                    +{link.tags.length - (isFeatured ? 3 : 1)}
-                  </span>
-                )}
               </div>
-              
-              {!expanded && link.modifiedAt && (
-                <div className="flex items-center text-surface-400 text-[11px] font-medium shrink-0 ml-4">
-                  <Clock className="w-3 h-3 mr-1" />
-                  {link.modifiedAt}
-                </div>
-              )}
-            </div>
+            )}
             
             {expanded && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.15, duration: 0.2 }}
-                className="mt-8 border-t border-surface-100 pt-8 flex justify-between items-center"
+                className="mt-8 border-t border-surface-100 pt-8 flex justify-end items-center"
               >
-                <div className="flex items-center text-surface-500 dark:text-surface-400 text-sm font-medium">
-                   <Clock className="w-4 h-4 mr-2 text-surface-400 dark:text-surface-500" /> Actualizado: {link.modifiedAt || 'Desconocido'}
-                </div>
                 <a 
                   href={link.url} 
                   target="_blank" 
@@ -398,7 +417,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
           </motion.div>
         )}
       </div>
-    </>
+    </div>
   );
 
   return (
@@ -408,7 +427,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
         onClick={() => !isExpanded && setIsExpanded(true)}
         className={`bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden cursor-pointer transition-shadow duration-300 hover:shadow-xl hover:z-10 rounded w-full 
           ${isFeatured ? 'col-span-1 sm:col-span-2 lg:col-span-2 row-span-2' : ''} 
-          ${viewMode === 'list' ? 'flex items-center h-24' : 'flex flex-col h-full'}`
+          ${viewMode === 'list' ? 'flex items-stretch h-24' : 'flex flex-col h-full'}`
         }
         style={categoryColor ? (() => {
             const isDark = document.documentElement.classList.contains('dark');
@@ -419,9 +438,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
             };
           })() : undefined}
       >
-        <div className="w-full h-full">
-          {!isExpanded && renderInternalContent(false)}
-        </div>
+        {!isExpanded && renderInternalContent(false)}
       </motion.div>
 
       {createPortal(

@@ -5,7 +5,7 @@ export interface Link {
   image: string;
   url: string;
   category: string;
-  tags: string[];
+  subcategory: string;
   featured?: boolean;
   modifiedAt?: string;
   isFavorite?: boolean;

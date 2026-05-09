@@ -22,6 +22,7 @@ import { db, storage, auth, googleProvider } from './lib/firebase';
 function App() {
   const [links, setLinks] = useState<Link[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode] = useState<'grid' | 'list'>('grid');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -75,7 +76,7 @@ function App() {
         return { 
           ...data, 
           id: doc.id,
-          tags: data.tags || [],
+          subcategory: data.subcategory || data.tags?.[0] || '',
           isFavorite: data.isFavorite || false
         } as Link;
       });
@@ -217,9 +218,8 @@ function App() {
       'Título': link.title,
       'URL': link.url,
       'Categoría': link.category,
-      'Etiquetas': link.tags.length > 0 ? link.tags.join(', ') : '',
+      'Subcategoría': link.subcategory || '',
       'Descripción': link.description,
-      'Fecha Modificación': link.modifiedAt,
       'Favorito': link.isFavorite ? 'Sí' : 'No'
     }));
 
@@ -269,13 +269,14 @@ function App() {
     updatePreferences({ categoryColors: updated });
   };
 
-  const breadcrumbs = ["LinkVault"];
+  const breadcrumbs = ['LinkVault'];
   if (selectedCategory === '__FAVORITES__') {
-    breadcrumbs.push("Favoritos");
+    breadcrumbs.push('Favoritos');
   } else if (selectedCategory) {
     breadcrumbs.push(selectedCategory);
+    if (selectedSubcategory) breadcrumbs.push(selectedSubcategory);
   } else {
-    breadcrumbs.push("Toda la Biblioteca");
+    breadcrumbs.push('Toda la Biblioteca');
   }
 
   return (
@@ -295,8 +296,10 @@ function App() {
         <Sidebar 
           links={links} 
           selectedCategory={selectedCategory}
-          onSelectCategory={(cat) => {
+          selectedSubcategory={selectedSubcategory}
+          onSelectCategory={(cat, sub = null) => {
              setSelectedCategory(cat);
+             setSelectedSubcategory(sub ?? null);
              setIsMobileMenuOpen(false);
           }}
           onAddClick={() => {
@@ -330,6 +333,7 @@ function App() {
         <MainContent 
           links={links}
           selectedCategory={selectedCategory}
+          selectedSubcategory={selectedSubcategory}
           searchQuery={searchQuery}
           viewMode={viewMode}
           onToggleFavorite={handleToggleFavorite}

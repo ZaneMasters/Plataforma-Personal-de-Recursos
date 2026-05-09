@@ -4,12 +4,13 @@ import { db } from '../lib/firebase';
 import type { User } from 'firebase/auth';
 
 export type ThemeType = 'light' | 'dark';
-export type ColorPalette = 'blue' | 'emerald' | 'violet' | 'rose' | 'amber';
+export type ColorPalette = 'blue' | 'emerald' | 'violet' | 'rose' | 'amber' | 'custom';
 export type SurfaceStyle = 'slate' | 'neutral' | 'stone' | 'tinted';
 
 export interface UserPreferences {
   theme: ThemeType;
   colorPalette: ColorPalette;
+  customAccentColor?: string; // hex, e.g. "#7c3aed"
   surfaceStyle: SurfaceStyle;
   categoryColors: Record<string, string>;
 }
@@ -20,6 +21,39 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   surfaceStyle: 'slate',
   categoryColors: {}
 };
+
+// --- Helpers for custom accent color ---
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function mixWith(base: [number, number, number], white: [number, number, number], t: number): string {
+  return base.map((c, i) => Math.round(c + (white[i] - c) * t)).join(' ');
+}
+
+function applyCustomAccent(hex: string) {
+  const root = document.documentElement;
+  const [r, g, b] = hexToRgb(hex);
+  const base: [number, number, number] = [r, g, b];
+  const white: [number, number, number] = [255, 255, 255];
+  const black: [number, number, number] = [0, 0, 0];
+  root.style.setProperty('--color-accent-50',  mixWith(base, white, 0.92));
+  root.style.setProperty('--color-accent-100', mixWith(base, white, 0.82));
+  root.style.setProperty('--color-accent-200', mixWith(base, white, 0.68));
+  root.style.setProperty('--color-accent-300', mixWith(base, white, 0.50));
+  root.style.setProperty('--color-accent-400', mixWith(base, white, 0.25));
+  root.style.setProperty('--color-accent-500', `${r} ${g} ${b}`);
+  root.style.setProperty('--color-accent-600', mixWith(base, black, 0.18));
+  root.style.setProperty('--color-accent-700', mixWith(base, black, 0.35));
+  root.style.setProperty('--color-accent-900', mixWith(base, black, 0.60));
+}
+
+function clearCustomAccent() {
+  const props = ['50','100','200','300','400','500','600','700','900'];
+  props.forEach(p => document.documentElement.style.removeProperty(`--color-accent-${p}`));
+}
 
 export function useUserPreferences(user?: User | null) {
   const [preferences, setPreferences] = useState<UserPreferences>(() => {
@@ -50,10 +84,15 @@ export function useUserPreferences(user?: User | null) {
     }
 
     // Apply color palette
-    if (preferences.colorPalette === 'blue') {
+    if (preferences.colorPalette === 'custom' && preferences.customAccentColor) {
+      htmlEl.setAttribute('data-theme', 'custom');
+      applyCustomAccent(preferences.customAccentColor);
+    } else if (preferences.colorPalette === 'blue') {
       htmlEl.removeAttribute('data-theme');
+      clearCustomAccent();
     } else {
       htmlEl.setAttribute('data-theme', preferences.colorPalette);
+      clearCustomAccent();
     }
 
     // Apply surface style
@@ -66,7 +105,7 @@ export function useUserPreferences(user?: User | null) {
     // Save locally
     localStorage.setItem('linkvault_settings', JSON.stringify(preferences));
 
-  }, [preferences.theme, preferences.colorPalette, preferences.surfaceStyle]);
+  }, [preferences.theme, preferences.colorPalette, preferences.customAccentColor, preferences.surfaceStyle]);
 
   // Effect to sync with Firebase if user is logged in
   useEffect(() => {

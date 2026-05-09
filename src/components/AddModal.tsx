@@ -16,7 +16,7 @@ export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalPr
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [tags, setTags] = useState('');
+  const [subcategory, setSubcategory] = useState('');
   
   // Image Upload State
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -78,7 +78,7 @@ export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalPr
         title,
         description,
         category: category || 'Sin Categoría',
-        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+        subcategory: subcategory.trim(),
         image: imageUrl, 
         modifiedAt: "Justo ahora",
         isFavorite: false
@@ -184,8 +184,8 @@ export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalPr
               )}
             </div>
             <div className="col-span-1">
-              <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Etiquetas</label>
-              <input type="text" value={tags} onChange={e => setTags(e.target.value)} placeholder="Separadas por coma (ej. react, ui)" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
+              <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Subcategoría</label>
+              <input type="text" value={subcategory} onChange={e => setSubcategory(e.target.value)} placeholder="ej. Componentes" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
             </div>
             <div className="col-span-2">
               <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Notas</label>

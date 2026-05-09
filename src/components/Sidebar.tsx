@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { HelpCircle, FolderOpen, Plus, Settings, Star, LayoutGrid, LogOut, X, MoreHorizontal } from 'lucide-react';
+import { HelpCircle, FolderOpen, Folder, Plus, Settings, Star, LayoutGrid, LogOut, X, MoreHorizontal, ChevronRight } from 'lucide-react';
 import type { Link } from '../types';
 import type { User } from 'firebase/auth';
 
 interface SidebarProps {
   links: Link[];
   selectedCategory: string | null;
-  onSelectCategory: (category: string | null) => void;
+  selectedSubcategory: string | null;
+  onSelectCategory: (category: string | null, subcategory?: string | null) => void;
   onAddClick: () => void;
   user?: User | null;
   onLogout?: () => void;
@@ -72,9 +73,7 @@ function ColorPickerPortal({
         Color de carpeta
       </p>
 
-      {/* RGB picker area */}
       <div className="flex items-center gap-2.5 mb-3">
-        {/* Color swatch that opens native picker */}
         <div
           className="relative w-12 h-12 rounded-lg overflow-hidden cursor-pointer border-2 border-surface-200 dark:border-surface-600 shadow-inner shrink-0 hover:border-surface-400 transition-colors"
           style={{ backgroundColor: localColor }}
@@ -95,7 +94,6 @@ function ColorPickerPortal({
         </div>
 
         <div className="flex-1 flex flex-col gap-1.5">
-          {/* Hex input */}
           <input
             type="text"
             value={localColor.toUpperCase()}
@@ -106,7 +104,6 @@ function ColorPickerPortal({
             className="w-full bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-600 rounded-md px-2 py-1.5 text-xs font-mono font-bold text-surface-700 dark:text-surface-300 focus:outline-none focus:border-accent-400 uppercase tracking-wider"
             maxLength={7}
           />
-          {/* Apply button */}
           <button
             onClick={() => { onSelect(localColor); onClose(); }}
             className="w-full py-1.5 rounded-md text-[11px] font-bold text-white transition-all active:scale-95 shadow-sm"
@@ -117,7 +114,6 @@ function ColorPickerPortal({
         </div>
       </div>
 
-      {/* Hue range slider */}
       <input
         type="range"
         min={0}
@@ -155,7 +151,6 @@ function ColorPickerPortal({
         }}
       />
 
-      {/* Quick preset swatches */}
       <div className="flex gap-1.5">
         {PRESETS.map(c => (
           <button
@@ -184,16 +179,41 @@ function ColorPickerPortal({
   );
 }
 
-export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick, user, onLogout, onSettingsClick, onCloseMobile, categoryColors, onSetCategoryColor }: SidebarProps) {
+export function Sidebar({ links, selectedCategory, selectedSubcategory, onSelectCategory, onAddClick, user, onLogout, onSettingsClick, onCloseMobile, categoryColors, onSetCategoryColor }: SidebarProps) {
   const [pickerState, setPickerState] = useState<PickerState | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   const categories = Array.from(new Set(links.map(link => link.category))).sort();
+
+  // Build a map: category → sorted unique subcategories
+  const subcategoryMap = categories.reduce((acc, cat) => {
+    const subs = Array.from(
+      new Set(
+        links
+          .filter(l => l.category === cat && l.subcategory && l.subcategory.trim())
+          .map(l => l.subcategory.trim())
+      )
+    ).sort();
+    acc[cat] = subs;
+    return acc;
+  }, {} as Record<string, string[]>);
+
   const categoryCounts = categories.reduce((acc, cat) => {
     acc[cat] = links.filter(l => l.category === cat).length;
     return acc;
   }, {} as Record<string, number>);
 
+  const subcategoryCounts = (cat: string) =>
+    subcategoryMap[cat].reduce((acc, sub) => {
+      acc[sub] = links.filter(l => l.category === cat && l.subcategory === sub).length;
+      return acc;
+    }, {} as Record<string, number>);
+
   const favoritesCount = links.filter(l => l.isFavorite).length;
+
+  const toggleExpand = (cat: string) => {
+    setExpandedCategories(prev => ({ ...prev, [cat]: !prev[cat] }));
+  };
 
   const openPicker = (e: React.MouseEvent<HTMLButtonElement>, category: string) => {
     e.stopPropagation();
@@ -230,6 +250,7 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 space-y-6">
+        {/* Biblioteca */}
         <div>
           <h3 className="px-3 mb-2 text-[11px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest font-display">
             Biblioteca
@@ -237,7 +258,7 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
           <ul className="space-y-0.5">
             <li>
               <button
-                onClick={() => onSelectCategory(null)}
+                onClick={() => onSelectCategory(null, null)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   selectedCategory === null
                     ? 'bg-white dark:bg-surface-800 text-accent-600 dark:text-accent-400 shadow-sm border border-surface-200/60 dark:border-surface-700'
@@ -255,7 +276,7 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
             </li>
             <li>
               <button
-                onClick={() => onSelectCategory('__FAVORITES__')}
+                onClick={() => onSelectCategory('__FAVORITES__', null)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   selectedCategory === '__FAVORITES__'
                     ? 'bg-white dark:bg-surface-800 text-accent-600 dark:text-accent-400 shadow-sm border border-surface-200/60 dark:border-surface-700'
@@ -280,6 +301,7 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
           </ul>
         </div>
 
+        {/* Directorios con subcategorías desplegables */}
         <div>
           <h3 className="px-3 mb-2 text-[11px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-widest font-display">
             Directorios
@@ -287,11 +309,15 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
           <ul className="space-y-0.5">
             {categories.map(category => {
               const catColor = categoryColors[category];
-              const isSelected = selectedCategory === category;
+              const isSelected = selectedCategory === category && !selectedSubcategory;
               const isPickerOpen = pickerState?.category === category;
+              const subs = subcategoryMap[category];
+              const isExpanded = !!expandedCategories[category];
+              const subCounts = subcategoryCounts(category);
 
               return (
                 <li key={category}>
+                  {/* Category row */}
                   <div
                     className={`flex items-center rounded-md transition-colors group relative ${
                       isSelected
@@ -299,7 +325,7 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
                         : 'hover:bg-surface-100 dark:hover:bg-surface-800/50'
                     }`}
                   >
-                    {/* Color accent strip */}
+                    {/* Color strip */}
                     {catColor && (
                       <div
                         className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full"
@@ -307,20 +333,35 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
                       />
                     )}
 
+                    {/* Expand/collapse chevron (only if has subcategories) */}
+                    {subs.length > 0 ? (
+                      <button
+                        onClick={() => toggleExpand(category)}
+                        className="pl-2 pr-0 py-2 text-surface-400 dark:text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors shrink-0"
+                        title={isExpanded ? 'Colapsar' : 'Expandir'}
+                      >
+                        <ChevronRight
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                        />
+                      </button>
+                    ) : (
+                      <div className="w-5 shrink-0" />
+                    )}
+
                     {/* Main category button */}
                     <button
-                      onClick={() => onSelectCategory(category)}
-                      className={`flex-1 flex items-center justify-between px-3 py-2 text-sm font-medium min-w-0 ${
+                      onClick={() => onSelectCategory(category, null)}
+                      className={`flex-1 flex items-center justify-between px-2 py-2 text-sm font-medium min-w-0 ${
                         isSelected
                           ? 'text-accent-600 dark:text-accent-400'
                           : 'text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-200'
                       }`}
                     >
-                      <div className="flex items-center space-x-3 truncate">
-                        <FolderOpen
-                          className="w-4 h-4 shrink-0 transition-colors"
-                          style={{ color: catColor || undefined }}
-                        />
+                      <div className="flex items-center space-x-2.5 truncate">
+                        {isExpanded
+                          ? <FolderOpen className="w-4 h-4 shrink-0 transition-colors" style={{ color: catColor || undefined }} />
+                          : <Folder className="w-4 h-4 shrink-0 transition-colors" style={{ color: catColor || undefined }} />
+                        }
                         <span className="truncate">{category}</span>
                       </div>
                       <span
@@ -354,6 +395,38 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
                       )}
                     </button>
                   </div>
+
+                  {/* Subcategories (collapsible) */}
+                  {subs.length > 0 && isExpanded && (
+                    <ul className="mt-0.5 ml-5 space-y-0.5 border-l border-surface-200 dark:border-surface-700 pl-2">
+                      {subs.map(sub => {
+                        const isSubSelected = selectedCategory === category && selectedSubcategory === sub;
+                        return (
+                          <li key={sub}>
+                            <button
+                              onClick={() => onSelectCategory(category, sub)}
+                              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                isSubSelected
+                                  ? 'bg-accent-50 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400'
+                                  : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/50 hover:text-surface-800 dark:hover:text-surface-200'
+                              }`}
+                            >
+                              <div className="flex items-center space-x-2 truncate">
+                                <span
+                                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                                  style={{ backgroundColor: catColor || 'currentColor', opacity: 0.7 }}
+                                />
+                                <span className="truncate">{sub}</span>
+                              </div>
+                              <span className="text-[10px] font-bold text-surface-400 dark:text-surface-500 shrink-0 ml-1">
+                                {subCounts[sub]}
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                 </li>
               );
             })}
@@ -408,7 +481,6 @@ export function Sidebar({ links, selectedCategory, onSelectCategory, onAddClick,
         </div>
       )}
 
-      {/* Color picker rendered via portal to escape overflow clipping */}
       {pickerState && (
         <ColorPickerPortal
           pickerState={pickerState}

@@ -1,13 +1,16 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, X, Star, Edit2, Save, Image as ImageIcon, Loader2, Trash2, FolderMinus } from 'lucide-react';
+import { ExternalLink, X, Edit2, Trash2, FolderMinus } from 'lucide-react';
 import type { Link } from '../types';
 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase';
 import { toast } from 'react-hot-toast';
-import imageCompression from 'browser-image-compression';
+import { AnimatedStarButton } from './ui/AnimatedStarButton';
+import { ConfirmModal } from './ui/ConfirmModal';
+import { LinkCardEdit } from './LinkCardEdit';
+import { compressImage } from '../lib/imageUtils';
 
 interface LinkCardProps {
   link: Link;
@@ -19,70 +22,7 @@ interface LinkCardProps {
   categoryColor?: string;
 }
 
-const AnimatedStarButton = ({ isFavorite, onClick }: { isFavorite: boolean | undefined; onClick: (e: React.MouseEvent) => void }) => {
-  const [isBursting, setIsBursting] = useState(false);
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isFavorite) {
-      setIsBursting(true);
-      setTimeout(() => setIsBursting(false), 800);
-    }
-    onClick(e);
-  };
-
-  const particleColors = [
-    'text-amber-400',
-    'text-yellow-500',
-    'text-orange-400',
-    'text-pink-400',
-    'text-rose-400',
-    'text-purple-400'
-  ];
-
-  return (
-    <div className="relative">
-      <button
-        onClick={handleClick}
-        title={isFavorite ? "Quitar de Favoritos" : "Añadir a Favoritos"}
-        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors relative z-10 ${isFavorite ? 'bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 shadow-sm' : 'bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700'}`}
-      >
-        <Star className={`w-4 h-4 transition-colors ${isFavorite ? 'fill-amber-400 text-amber-500' : 'text-surface-400'}`} />
-      </button>
-
-      <AnimatePresence>
-        {isBursting && (
-          <div className="absolute inset-0 pointer-events-none z-0">
-            {[...Array(6)].map((_, i) => {
-              const angle = (i * 360) / 6 - 90;
-              const rad = (angle * Math.PI) / 180;
-              const x = Math.cos(rad) * 45;
-              const y = Math.sin(rad) * 45;
-              const colorClass = particleColors[i % particleColors.length];
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ x: "-50%", y: "-50%", opacity: 1, scale: 0, rotate: 0 }}
-                  animate={{
-                    x: `calc(-50% + ${x}px)`,
-                    y: `calc(-50% + ${y}px)`,
-                    opacity: [1, 1, 0],
-                    scale: [0, 1.2, 0],
-                    rotate: [0, 180]
-                  }}
-                  transition={{ duration: 0.7, ease: "easeOut" }}
-                  className={`absolute top-1/2 left-1/2 ${colorClass}`}
-                >
-                  <Star className="w-3 h-3 fill-current" />
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
 
 export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDeleteLink, existingCategories = [], categoryColor }: LinkCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -102,7 +42,6 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
   // File Upload State
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isFeatured = link.isFavorite && viewMode === 'grid';
 
@@ -138,25 +77,11 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
         }
 
         toast.loading('Optimizando imagen...', { id: tId });
-        let fileToUpload: File | Blob = imageFile;
-        let extension = imageFile.name.split('.').pop() || 'jpg';
-
-        try {
-          const options = {
-            maxSizeMB: 0.15,
-            maxWidthOrHeight: 800,
-            useWebWorker: true,
-            fileType: 'image/webp'
-          };
-          fileToUpload = await imageCompression(imageFile, options);
-          extension = 'webp';
-        } catch (compErr) {
-          console.warn('Error comprimiendo la imagen. Subiendo original:', compErr);
-        }
+        const { file, extension } = await compressImage(imageFile);
 
         toast.loading('Subiendo nueva imagen...', { id: tId });
         const storageRef = ref(storage, `links/${Date.now()}_img.${extension}`);
-        const snapshot = await uploadBytes(storageRef, fileToUpload);
+        const snapshot = await uploadBytes(storageRef, file);
         imageUrl = await getDownloadURL(snapshot.ref);
       }
 
@@ -320,90 +245,23 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
             )}
           </>
         ) : (
-          // --- EDIT MODE ---
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col gap-4 w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-cookie text-3xl text-surface-800 dark:text-surface-100">Editar Referencia</h3>
-              <div
-                className="px-4 py-2 border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-lg flex items-center justify-center cursor-pointer hover:border-accent-400 hover:bg-accent-50/50 dark:hover:border-accent-500 dark:hover:bg-accent-900/30 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-                title="Subir Imagen Nueva"
-              >
-                <ImageIcon className="w-4 h-4 text-surface-500 dark:text-surface-400 mr-2" />
-                <span className="text-xs font-bold text-surface-600 dark:text-surface-400">Cambiar Imagen</span>
-                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>Título</label>
-                <input type="text" value={editTitle} onChange={e => setEditTitle(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>URL</label>
-                <input type="url" value={editUrl} onChange={e => setEditUrl(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
-              </div>
-              <div className="col-span-1">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>Categoría</label>
-                <input type="text" value={editCategory} onChange={e => setEditCategory(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
-                {existingCategories.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {existingCategories.map(cat => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); setEditCategory(cat); }}
-                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors font-medium ${editCategory === cat
-                            ? 'bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 border-accent-300 dark:border-accent-700'
-                            : 'bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700'
-                          }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="col-span-1">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>Subcategoría</label>
-                <input type="text" value={editSubcategory} onChange={e => setEditSubcategory(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>Notas / Descripción</label>
-                <textarea rows={4} value={editDesc} onChange={e => setEditDesc(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 resize-none" />
-              </div>
-            </div>
-
-            <div className="mt-6 border-t border-surface-100 dark:border-surface-700 pt-6 flex justify-end items-center gap-3">
-              <button
-                className="px-5 py-2 text-sm font-medium text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors disabled:opacity-50"
-                onClick={() => setIsEditing(false)}
-                disabled={isUploading}
-              >
-                Cancelar
-              </button>
-              <button
-                className="inline-flex items-center px-6 py-2 bg-accent-600 text-white rounded font-bold text-sm shadow-sm hover:bg-accent-700 active:scale-95 transition-all disabled:opacity-75 disabled:active:scale-100"
-                onClick={handleSave}
-                disabled={isUploading}
-              >
-                {isUploading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Guardando...
-                  </>
-                ) : (
-                  <><Save className="w-4 h-4 mr-2" /> Guardar Cambios</>
-                )}
-              </button>
-            </div>
-          </motion.div>
+          <LinkCardEdit 
+            editTitle={editTitle}
+            setEditTitle={setEditTitle}
+            editUrl={editUrl}
+            setEditUrl={setEditUrl}
+            editCategory={editCategory}
+            setEditCategory={setEditCategory}
+            editSubcategory={editSubcategory}
+            setEditSubcategory={setEditSubcategory}
+            editDesc={editDesc}
+            setEditDesc={setEditDesc}
+            existingCategories={existingCategories}
+            handleImageChange={handleImageChange}
+            handleSave={handleSave}
+            setIsEditing={setIsEditing}
+            isUploading={isUploading}
+          />
         )}
       </div>
     </div>
@@ -454,41 +312,13 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                 transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="bg-white dark:bg-surface-800 rounded-xl shadow-2xl overflow-hidden relative z-10 w-full max-w-4xl max-h-[90vh] flex flex-col"
               >
-                {/* Delete confirm overlay */}
-                <AnimatePresence>
-                  {showDeleteConfirm && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute inset-0 bg-white/95 dark:bg-surface-800/95 backdrop-blur-sm z-[100] flex flex-col items-center justify-center p-8 text-center"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-6 border border-red-200 dark:border-red-900/50">
-                        <Trash2 className="w-8 h-8" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-50 mb-2 font-display tracking-tight">¿Eliminar Definitivamente?</h3>
-                      <p className="text-surface-500 dark:text-surface-400 mb-8 max-w-sm leading-relaxed text-sm">
-                        Estás a punto de borrar &quot;{link.title}&quot;. Esta acción eliminará los datos y su imagen de tu base de datos y no se puede deshacer.
-                      </p>
-                      <div className="flex flex-col sm:flex-row items-center gap-3">
-                        <button
-                          className="px-6 py-2.5 text-sm font-bold text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700/50 rounded-lg transition-colors w-full sm:w-auto"
-                          onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded shadow-sm transition-all active:scale-95 w-full sm:w-auto"
-                          onClick={handleDelete}
-                        >
-                          Sí, Descartar Enlace
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <ConfirmModal 
+                  isOpen={showDeleteConfirm}
+                  title="¿Eliminar Definitivamente?"
+                  description={`Estás a punto de borrar "${link.title}". Esta acción eliminará los datos y su imagen de tu base de datos y no se puede deshacer.`}
+                  onCancel={(e) => { e.stopPropagation(); setShowDeleteConfirm(false); }}
+                  onConfirm={handleDelete}
+                />
 
                 <div className="flex-1 overflow-y-auto w-full flex flex-col relative h-full">
                   {renderInternalContent(true)}

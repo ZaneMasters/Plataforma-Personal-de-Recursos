@@ -32,43 +32,43 @@ const AnimatedStarButton = ({ isFavorite, onClick }: { isFavorite: boolean | und
   };
 
   const particleColors = [
-    'text-amber-400', 
-    'text-yellow-500', 
-    'text-orange-400', 
-    'text-pink-400', 
+    'text-amber-400',
+    'text-yellow-500',
+    'text-orange-400',
+    'text-pink-400',
     'text-rose-400',
     'text-purple-400'
   ];
 
   return (
     <div className="relative">
-      <button 
+      <button
         onClick={handleClick}
         title={isFavorite ? "Quitar de Favoritos" : "Añadir a Favoritos"}
         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors relative z-10 ${isFavorite ? 'bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 shadow-sm' : 'bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700'}`}
       >
         <Star className={`w-4 h-4 transition-colors ${isFavorite ? 'fill-amber-400 text-amber-500' : 'text-surface-400'}`} />
       </button>
-      
+
       <AnimatePresence>
         {isBursting && (
           <div className="absolute inset-0 pointer-events-none z-0">
             {[...Array(6)].map((_, i) => {
-              const angle = (i * 360) / 6 - 90; 
+              const angle = (i * 360) / 6 - 90;
               const rad = (angle * Math.PI) / 180;
-              const x = Math.cos(rad) * 45; 
+              const x = Math.cos(rad) * 45;
               const y = Math.sin(rad) * 45;
               const colorClass = particleColors[i % particleColors.length];
               return (
                 <motion.div
                   key={i}
                   initial={{ x: "-50%", y: "-50%", opacity: 1, scale: 0, rotate: 0 }}
-                  animate={{ 
-                    x: `calc(-50% + ${x}px)`, 
-                    y: `calc(-50% + ${y}px)`, 
-                    opacity: [1, 1, 0], 
-                    scale: [0, 1.2, 0], 
-                    rotate: [0, 180] 
+                  animate={{
+                    x: `calc(-50% + ${x}px)`,
+                    y: `calc(-50% + ${y}px)`,
+                    opacity: [1, 1, 0],
+                    scale: [0, 1.2, 0],
+                    rotate: [0, 180]
                   }}
                   transition={{ duration: 0.7, ease: "easeOut" }}
                   className={`absolute top-1/2 left-1/2 ${colorClass}`}
@@ -88,7 +88,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   // Custom Delete Modal Trigger
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -127,20 +127,20 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
     e.stopPropagation();
     setIsUploading(true);
     const tId = toast.loading('Actualizando...');
-    
+
     try {
       let imageUrl = link.image;
-      
+
       if (imageFile) {
         if (!import.meta.env.VITE_FIREBASE_API_KEY) {
-           toast.error("Requiere conexión a Firebase.", { id: tId });
-           setIsUploading(false); return;
+          toast.error("Requiere conexión a Firebase.", { id: tId });
+          setIsUploading(false); return;
         }
 
         toast.loading('Optimizando imagen...', { id: tId });
         let fileToUpload: File | Blob = imageFile;
         let extension = imageFile.name.split('.').pop() || 'jpg';
-        
+
         try {
           const options = {
             maxSizeMB: 0.15,
@@ -193,8 +193,8 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
             ? 'w-full shrink-0 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-center px-6 py-4 relative'
             : viewMode === 'grid'
               ? (isFeatured
-                  ? 'w-full h-52 shrink-0 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden p-2'
-                  : 'w-full aspect-video shrink-0 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden p-2')
+                ? 'w-full h-52 shrink-0 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden p-2'
+                : 'w-full aspect-video shrink-0 bg-surface-50 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden p-2')
               : 'w-24 h-24 shrink-0 border-r border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 flex items-center justify-center overflow-hidden p-1'
         }
         style={{ backgroundImage: 'radial-gradient(circle, var(--tw-gradient-stops))', backgroundSize: '8px 8px' }}
@@ -209,20 +209,22 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
               : 'w-full h-full object-contain'
           }
         />
-        
+      </div>
+
+      <div className={`flex flex-col flex-1 min-w-0 ${expanded ? 'p-8 sm:p-12 relative' : viewMode === 'grid' ? 'p-5' : 'py-3 px-4 justify-center'}`}>
         {expanded && (
-          <div className="absolute top-4 right-4 flex items-center space-x-2 z-10">
+          <div className="absolute top-6 right-6 sm:top-8 sm:right-8 flex items-center space-x-2 z-10">
             {!isEditing && !showDeleteConfirm && (
               <>
-                <button 
-                  className="bg-white/80 dark:bg-surface-800/80 hover:bg-white dark:hover:bg-surface-800 text-surface-700 dark:text-surface-300 hover:text-accent-600 dark:hover:text-accent-400 rounded border border-surface-200 dark:border-surface-700 shadow-sm p-2 backdrop-blur-md transition-all"
+                <button
+                  className="bg-white dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 hover:text-accent-600 dark:hover:text-accent-400 rounded border border-surface-200 dark:border-surface-700 shadow-sm p-2 transition-all"
                   onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                   title="Editar tarjeta"
                 >
                   <Edit2 className="w-5 h-5" />
                 </button>
-                <button 
-                  className="bg-white/80 dark:bg-surface-800/80 hover:bg-red-50 dark:hover:bg-red-900/30 text-surface-700 dark:text-surface-300 hover:text-red-500 rounded border border-surface-200 dark:border-surface-700 shadow-sm p-2 backdrop-blur-md transition-all"
+                <button
+                  className="bg-white dark:bg-surface-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-surface-700 dark:text-surface-300 hover:text-red-500 rounded border border-surface-200 dark:border-surface-700 shadow-sm p-2 transition-all"
                   onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(true); }}
                   title="Eliminar tarjeta"
                 >
@@ -230,18 +232,15 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                 </button>
               </>
             )}
-            <button 
-               className="bg-white/80 dark:bg-surface-800/80 hover:bg-white dark:hover:bg-surface-800 text-surface-900 dark:text-surface-100 rounded border border-surface-200 dark:border-surface-700 shadow-sm p-2 backdrop-blur-md transition-all disabled:opacity-50"
-               onClick={onCollapse}
-               disabled={isUploading}
-             >
-               <X className="w-5 h-5" />
-             </button>
+            <button
+              className="bg-white dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-900 dark:text-surface-100 rounded border border-surface-200 dark:border-surface-700 shadow-sm p-2 transition-all disabled:opacity-50"
+              onClick={onCollapse}
+              disabled={isUploading}
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         )}
-      </div>
-
-      <div className={`flex flex-col flex-1 min-w-0 ${expanded ? 'p-8 sm:p-12' : viewMode === 'grid' ? 'p-5' : 'py-3 px-4 justify-center'}`}>
         {!isEditing ? (
           // --- READ MODE ---
           <>
@@ -252,7 +251,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                   {link.category}
                 </div>
               )}
-              <h3 className={`font-cookie text-surface-900 dark:text-surface-100 leading-tight truncate ${expanded ? 'text-5xl sm:text-6xl mb-3 whitespace-normal' : isFeatured ? 'text-3xl' : 'text-2xl'}`}>
+              <h3 className={`font-cookie text-surface-900 dark:text-surface-100 ${expanded ? 'leading-normal text-5xl sm:text-6xl mb-3 whitespace-normal pb-3 pr-24' : 'leading-tight truncate ' + (isFeatured ? 'text-3xl' : 'text-2xl')}`}>
                 {link.title}
               </h3>
             </div>
@@ -300,7 +299,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                 </span>
               </div>
             )}
-            
+
             {expanded && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -308,9 +307,9 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                 transition={{ delay: 0.15, duration: 0.2 }}
                 className="mt-8 border-t border-surface-100 pt-8 flex justify-end items-center"
               >
-                <a 
-                  href={link.url} 
-                  target="_blank" 
+                <a
+                  href={link.url}
+                  target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center px-6 py-2.5 bg-accent-600 hover:bg-accent-700 dark:bg-accent-500 dark:hover:bg-accent-600 text-white rounded font-bold text-sm shadow-sm active:scale-95 transition-all"
                   onClick={e => e.stopPropagation()}
@@ -322,36 +321,36 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
           </>
         ) : (
           // --- EDIT MODE ---
-          <motion.div 
-             initial={{ opacity: 0 }} 
-             animate={{ opacity: 1 }} 
-             className="flex flex-col gap-4 w-full"
-             onClick={(e) => e.stopPropagation()}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col gap-4 w-full"
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-2">
-               <h3 className="font-cookie text-3xl text-surface-800 dark:text-surface-100">Editar Referencia</h3>
-               <div 
-                  className="px-4 py-2 border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-lg flex items-center justify-center cursor-pointer hover:border-accent-400 hover:bg-accent-50/50 dark:hover:border-accent-500 dark:hover:bg-accent-900/30 transition-colors"
-                  onClick={() => fileInputRef.current?.click()}
-                  title="Subir Imagen Nueva"
-                >
-                  <ImageIcon className="w-4 h-4 text-surface-500 dark:text-surface-400 mr-2" />
-                  <span className="text-xs font-bold text-surface-600 dark:text-surface-400">Cambiar Imagen</span>
-                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
-               </div>
+              <h3 className="font-cookie text-3xl text-surface-800 dark:text-surface-100">Editar Referencia</h3>
+              <div
+                className="px-4 py-2 border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-lg flex items-center justify-center cursor-pointer hover:border-accent-400 hover:bg-accent-50/50 dark:hover:border-accent-500 dark:hover:bg-accent-900/30 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+                title="Subir Imagen Nueva"
+              >
+                <ImageIcon className="w-4 h-4 text-surface-500 dark:text-surface-400 mr-2" />
+                <span className="text-xs font-bold text-surface-600 dark:text-surface-400">Cambiar Imagen</span>
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+              </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Título</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>Título</label>
                 <input type="text" value={editTitle} onChange={e => setEditTitle(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
               </div>
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>URL</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>URL</label>
                 <input type="url" value={editUrl} onChange={e => setEditUrl(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
               </div>
               <div className="col-span-1">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Categoría</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>Categoría</label>
                 <input type="text" value={editCategory} onChange={e => setEditCategory(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
                 {existingCategories.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -360,11 +359,10 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                         key={cat}
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setEditCategory(cat); }}
-                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors font-medium ${
-                          editCategory === cat 
-                          ? 'bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 border-accent-300 dark:border-accent-700' 
-                          : 'bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700'
-                        }`}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors font-medium ${editCategory === cat
+                            ? 'bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 border-accent-300 dark:border-accent-700'
+                            : 'bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700'
+                          }`}
                       >
                         {cat}
                       </button>
@@ -373,24 +371,24 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                 )}
               </div>
               <div className="col-span-1">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Subcategoría</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>Subcategoría</label>
                 <input type="text" value={editSubcategory} onChange={e => setEditSubcategory(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100" />
               </div>
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Notas / Descripción</label>
+                <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{ letterSpacing: '0.12em' }}>Notas / Descripción</label>
                 <textarea rows={4} value={editDesc} onChange={e => setEditDesc(e.target.value)} className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 resize-none" />
               </div>
             </div>
 
             <div className="mt-6 border-t border-surface-100 dark:border-surface-700 pt-6 flex justify-end items-center gap-3">
-              <button 
+              <button
                 className="px-5 py-2 text-sm font-medium text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors disabled:opacity-50"
                 onClick={() => setIsEditing(false)}
                 disabled={isUploading}
               >
                 Cancelar
               </button>
-              <button 
+              <button
                 className="inline-flex items-center px-6 py-2 bg-accent-600 text-white rounded font-bold text-sm shadow-sm hover:bg-accent-700 active:scale-95 transition-all disabled:opacity-75 disabled:active:scale-100"
                 onClick={handleSave}
                 disabled={isUploading}
@@ -421,13 +419,13 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
           ${viewMode === 'list' ? 'flex items-stretch h-24' : 'flex flex-col h-full'}`
         }
         style={categoryColor ? (() => {
-            const isDark = document.documentElement.classList.contains('dark');
-            return {
-              background: isDark
-                ? `linear-gradient(145deg, ${categoryColor}72 0%, ${categoryColor}44 55%, ${categoryColor}22 100%)`
-                : `linear-gradient(145deg, ${categoryColor}42 0%, ${categoryColor}22 55%, ${categoryColor}0e 100%)`
-            };
-          })() : undefined}
+          const isDark = document.documentElement.classList.contains('dark');
+          return {
+            background: isDark
+              ? `linear-gradient(145deg, ${categoryColor}72 0%, ${categoryColor}44 55%, ${categoryColor}22 100%)`
+              : `linear-gradient(145deg, ${categoryColor}42 0%, ${categoryColor}22 55%, ${categoryColor}0e 100%)`
+          };
+        })() : undefined}
       >
         {!isExpanded && renderInternalContent(false)}
       </motion.div>

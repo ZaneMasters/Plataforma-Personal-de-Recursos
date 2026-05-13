@@ -138,23 +138,23 @@ export function useUserPreferences(user?: User | null) {
      if (!import.meta.env.VITE_FIREBASE_API_KEY || !user) return;
 
      const docRef = doc(db, 'users', user.uid);
-     
+
      const unsubscribe = onSnapshot(docRef, (docSnap) => {
-         if (docSnap.exists()) {
-           const data = docSnap.data();
-           if (data.preferences) {
-              setPreferences((prev) => {
-                 // only update if different to avoid looping
-                 if (prev.theme !== data.preferences.theme || prev.colorPalette !== data.preferences.colorPalette || prev.surfaceStyle !== data.preferences.surfaceStyle) {
-                    return { ...prev, ...data.preferences, categoryColors: { ...prev.categoryColors, ...(data.preferences.categoryColors || {}) } };
-                 }
-                 if (JSON.stringify(prev.categoryColors) !== JSON.stringify(data.preferences.categoryColors || {})) {
-                    return { ...prev, categoryColors: { ...prev.categoryColors, ...(data.preferences.categoryColors || {}) } };
-                 }
-                 return prev;
-              });
-           }
+       if (docSnap.exists()) {
+         const data = docSnap.data();
+         if (data.preferences) {
+           // Always fully replace with the Firestore data for THIS user.
+           // Never merge with prev state to avoid bleed-through between accounts.
+           const merged: UserPreferences = {
+             ...DEFAULT_PREFERENCES,
+             ...data.preferences,
+             categoryColors: data.preferences.categoryColors || {},
+           };
+           setPreferences(merged);
+           // Keep localStorage in sync immediately
+           localStorage.setItem(getStorageKey(user.uid), JSON.stringify(merged));
          }
+       }
      });
 
      return () => unsubscribe();

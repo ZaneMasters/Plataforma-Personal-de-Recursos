@@ -55,22 +55,48 @@ function clearCustomAccent() {
   props.forEach(p => document.documentElement.style.removeProperty(`--color-accent-${p}`));
 }
 
+// Returns the localStorage key scoped to the current user (or a guest key)
+function getStorageKey(uid?: string | null) {
+  return uid ? `linkvault_settings_${uid}` : 'linkvault_settings_guest';
+}
+
+function loadFromStorage(uid?: string | null): UserPreferences | null {
+  // Remove the old shared key to prevent bleed-through (one-time migration)
+  localStorage.removeItem('linkvault_settings');
+
+  const key = getStorageKey(uid);
+  const saved = localStorage.getItem(key);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch {
+      // ignore parse errors
+    }
+  }
+  return null;
+}
+
 export function useUserPreferences(user?: User | null) {
   const [preferences, setPreferences] = useState<UserPreferences>(() => {
-    const saved = localStorage.getItem('linkvault_settings');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        // Fallback
-      }
-    }
-    // Check system preference for dark mode if nothing saved
+    // On first render user is usually undefined; load guest defaults
+    const saved = loadFromStorage(user?.uid);
+    if (saved) return saved;
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-       return { ...DEFAULT_PREFERENCES, theme: 'dark' };
+      return { ...DEFAULT_PREFERENCES, theme: 'dark' };
     }
     return DEFAULT_PREFERENCES;
   });
+
+  // Reset preferences whenever the logged-in user changes
+  useEffect(() => {
+    const saved = loadFromStorage(user?.uid);
+    if (saved) {
+      setPreferences(saved);
+    } else {
+      const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setPreferences({ ...DEFAULT_PREFERENCES, theme: systemDark ? 'dark' : 'light' });
+    }
+  }, [user?.uid]);
 
   // Effect to apply classes to HTML and Body
   useEffect(() => {
@@ -102,10 +128,10 @@ export function useUserPreferences(user?: User | null) {
       htmlEl.setAttribute('data-surface', preferences.surfaceStyle);
     }
     
-    // Save locally
-    localStorage.setItem('linkvault_settings', JSON.stringify(preferences));
+    // Save locally using the user-scoped key
+    localStorage.setItem(getStorageKey(user?.uid), JSON.stringify(preferences));
 
-  }, [preferences.theme, preferences.colorPalette, preferences.customAccentColor, preferences.surfaceStyle]);
+  }, [preferences.theme, preferences.colorPalette, preferences.customAccentColor, preferences.surfaceStyle, user?.uid]);
 
   // Effect to sync with Firebase if user is logged in
   useEffect(() => {

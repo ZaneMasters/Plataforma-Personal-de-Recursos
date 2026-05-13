@@ -349,6 +349,7 @@ function App() {
           onClose={() => setIsAddModalOpen(false)} 
           onAdd={handleAddLink} 
           existingCategories={existingCategories}
+          existingLinks={links}
         />
       )}
 

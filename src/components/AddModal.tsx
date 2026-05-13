@@ -9,9 +9,10 @@ interface AddModalProps {
   onClose: () => void;
   onAdd: (linkData: any) => void;
   existingCategories?: string[];
+  existingLinks?: { category: string; subcategory?: string }[];
 }
 
-export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalProps) {
+export function AddModal({ onClose, onAdd, existingCategories = [], existingLinks = [] }: AddModalProps) {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -186,6 +187,32 @@ export function AddModal({ onClose, onAdd, existingCategories = [] }: AddModalPr
             <div className="col-span-1">
               <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Subcategoría</label>
               <input type="text" value={subcategory} onChange={e => setSubcategory(e.target.value)} placeholder="ej. Componentes" className="w-full bg-white dark:bg-surface-900/50 border border-surface-200 dark:border-surface-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-accent-500 text-surface-800 dark:text-surface-100 focus:shadow-sm transition-shadow" />
+              {(() => {
+                const trimmedCat = category.trim().toLowerCase();
+                const subs = Array.from(new Set(
+                  existingLinks
+                    .filter(l => l.category?.trim().toLowerCase() === trimmedCat && l.subcategory?.trim())
+                    .map(l => l.subcategory!.trim())
+                )).sort();
+                return subs.length > 0 ? (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {subs.map(sub => (
+                      <button
+                        key={sub}
+                        type="button"
+                        onClick={() => setSubcategory(sub)}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors font-medium ${
+                          subcategory === sub
+                          ? 'bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 border-accent-300 dark:border-accent-700'
+                          : 'bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-accent-300 dark:hover:border-accent-700'
+                        }`}
+                      >
+                        {sub}
+                      </button>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
             </div>
             <div className="col-span-2">
               <label className="block text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-widest mb-1.5" style={{letterSpacing:'0.12em'}}>Notas</label>

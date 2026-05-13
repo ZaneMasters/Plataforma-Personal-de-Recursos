@@ -55,7 +55,7 @@ export function MainContent({ links, selectedCategory, selectedSubcategory, sear
       <div className="max-w-[1600px] mx-auto w-full h-full p-6 sm:p-8 lg:p-10">
         <div 
           className={viewMode === 'grid' 
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pb-20 auto-rows-min" 
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-5 pb-20 auto-rows-min" 
           : "flex flex-col gap-3 pb-20"}
         >
           {links.map((link) => {

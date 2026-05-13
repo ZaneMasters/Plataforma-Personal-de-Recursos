@@ -251,7 +251,7 @@ export function LinkCard({ link, viewMode, onToggleFavorite, onUpdateLink, onDel
                   {link.category}
                 </div>
               )}
-              <h3 className={`font-cookie text-surface-900 dark:text-surface-100 ${expanded ? 'leading-normal text-5xl sm:text-6xl mb-3 whitespace-normal pb-3 pr-24' : 'leading-tight truncate ' + (isFeatured ? 'text-3xl' : 'text-2xl')}`}>
+              <h3 className={`font-cookie text-surface-900 dark:text-surface-100 ${expanded ? 'leading-normal text-5xl sm:text-6xl mb-3 whitespace-normal pb-3 pr-24' : 'leading-tight line-clamp-2 ' + (isFeatured ? 'text-3xl' : 'text-2xl')}`}>
                 {link.title}
               </h3>
             </div>
